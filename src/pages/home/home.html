@@ -13,13 +13,27 @@
     <p></p>
     <p></p>
   </ion-item>
-
+<!--
   <ion-item  *ngFor="let question of questions">
     <h1></h1>
     {{ question }}
     <p></p>
     <p></p>
   </ion-item>
+-->
 <button ion-button full (click)="logout()">Logout</button>
 <button ion-button full (click)="scheduleNotification()">Schedule Notification</button>
+
+    <ion-list>
+      <ion-list-header>Select the event-type you wish to log.</ion-list-header>
+      <ion-menu side="left" [content]="mycontent">...</ion-menu>
+
+      <button ion-button block large>Log Exercise</button><br>
+      <br>
+      <button ion-button block large (click)="home">Log Diet</button><br>
+      <br>
+      <button ion-button block large>Log Mood</button>
+
+    </ion-list>
+
 </ion-content>

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { Validators, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+
 
 @Component({
   selector: 'page-about',
@@ -7,8 +9,9 @@ import { NavController } from 'ionic-angular';
 })
 export class AboutPage {
 
-  constructor(public navCtrl: NavController) {
+    constructor(private navController: NavController, private fb: FormBuilder, public navCtrl: NavController) {
+        }
 
-  }
-
-}
+    	  logForm(){
+    			 }
+    }

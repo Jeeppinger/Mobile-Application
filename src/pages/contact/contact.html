@@ -1,17 +1,59 @@
-<ion-header>
-  <ion-navbar>
-    <ion-title>
-      Contact
-    </ion-title>
-  </ion-navbar>
-</ion-header>
-
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
+  <ion-item>
+    <ion-label floating>Question ID</ion-label>
+    <ion-input type="text" [(ngModel)]="qID"></ion-input>
+  </ion-item>
+
+  <button ion-button (click)="resetQuestion()">Reset Question</button>
+
+  <ion-item  *ngIf="questionsType != 'Invalid'">
+      <h1></h1>
+      {{ questions }}
+      <p></p>
+  </ion-item>
+
+  <ion-item  *ngIf="questionsType == 'Invalid'">
+      <h1></h1>
+      Invalid Question ID
+      <p></p>
+  </ion-item>
+
+
+
+  <ion-list *ngIf="questionsType == 'Radio'" radio-group [(ngModel)]="userInfo.ans">
     <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      @ionicframework
+      <ion-label>Yes</ion-label>
+      <ion-radio value="Yes" checked></ion-radio>
+    </ion-item>
+    <ion-item>
+      <ion-label>No</ion-label>
+      <ion-radio value="No"></ion-radio>
     </ion-item>
   </ion-list>
+
+
+  <ion-item *ngIf="questionsType == 'slider'">
+      <ion-range [(ngModel)]="userInfo.ans" min="0" max="100">
+        <ion-icon range-left large name="sad"></ion-icon>
+        <ion-icon range-right large name="happy"></ion-icon>
+      </ion-range>
+  </ion-item>
+
+<!--value="{{key}}">{{key}}-->
+  <ion-select *ngIf="questionsType == 'select'" [(ngModel)]="userInfo.ans" multiple="true">
+    <ion-option value = "Happy">Happy</ion-option>
+    <ion-option value = "Excited">Excited</ion-option>
+    <ion-option value = "Nervous">Nervous</ion-option>
+    <ion-option value = "Stressed">Stressed</ion-option>
+    <ion-option value = "Motivated">Motivated</ion-option>
+  </ion-select>
+
+  <ion-item *ngIf="questionsType == 'time'">
+    <ion-datetime displayFormat="hh:mm a" placeholder = "Tap Here to Select Time" [(ngModel)]="userInfo.date"></ion-datetime>
+  </ion-item>
+
+<p padding>The answer provided is {{userInfo.ans}}</p>
+
+<button ion-button (click)="submitQuestion()">Submit Question</button>
+
 </ion-content>

@@ -1,3 +1,15 @@
 page-contact {
 
-}
+  .slider{
+    width: 50%;
+    height: 25px;
+    opacity: 0.7;
+    transition: opacity .2s;
+
+
+    }
+  .range {
+    $range-ios-tick-height:                       24px;
+  }
+
+  }
