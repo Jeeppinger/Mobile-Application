@@ -61,7 +61,7 @@ export class HomePage {
         {
           this.toast.create({
             message: `Welcome to SCHEMA, ${val}`,
-            duration: 5000
+            duration: 2000
           }).present();
 
           //get a specific document within a collection

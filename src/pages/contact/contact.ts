@@ -11,7 +11,7 @@ import { LoginPage } from '../login/login';
 export class ContactPage {
 
   myForm: FormGroup;
-  userInfo: {name: string, email: string, phone: string} = {name: '', email: '', phone: ''};
+  userInfo: {name: string, ans: any, email: string, phone: string} = {name: '', ans: '', email: '', phone: ''};
   questions: any;
   questionsType: any;
   qID: any;
