@@ -40,16 +40,18 @@
   </ion-item>
 
 <!--value="{{key}}">{{key}}-->
-  <ion-select *ngIf="questionsType == 'select'" [(ngModel)]="userInfo.ans" multiple="true">
+<ion-item *ngIf="questionsType == 'select'">
+  <ion-select [(ngModel)]="userInfo.ans" multiple="true">
     <ion-option value = "Happy">Happy</ion-option>
     <ion-option value = "Excited">Excited</ion-option>
     <ion-option value = "Nervous">Nervous</ion-option>
     <ion-option value = "Stressed">Stressed</ion-option>
     <ion-option value = "Motivated">Motivated</ion-option>
   </ion-select>
+  </ion-item>
 
   <ion-item *ngIf="questionsType == 'time'">
-    <ion-datetime displayFormat="hh:mm a" placeholder = "Tap Here to Select Time" [(ngModel)]="userInfo.date"></ion-datetime>
+    <ion-datetime displayFormat="hh:mm a" placeholder = "Tap Here to Select Time" [(ngModel)]="userInfo.ans"></ion-datetime>
   </ion-item>
 
 <p padding>The answer provided is {{userInfo.ans}}</p>

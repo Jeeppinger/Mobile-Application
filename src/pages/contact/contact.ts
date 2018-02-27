@@ -3,6 +3,7 @@ import { NavController } from 'ionic-angular';
 import { FormGroup, FormBuilder, FormControl, Validators} from "@angular/forms";
 import { AngularFirestore } from 'angularfire2/firestore';
 import { LoginPage } from '../login/login';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'page-contact',
@@ -17,7 +18,8 @@ export class ContactPage {
   qID: any;
 
   constructor(private navController: NavController, private fb: FormBuilder,
-    public afs: AngularFirestore, public navCtrl: NavController) {
+    public afs: AngularFirestore, public navCtrl: NavController,
+    private storage: Storage) {
 
 
     }
@@ -47,7 +49,28 @@ export class ContactPage {
 
     submitQuestion(){
       //submit answer to database
-      alert(this.userInfo.ans);
+      var data = {
+        name: 'TEST',
+        [this.questions]: this.userInfo.ans 
+      };
+      var today = new Date();
+      var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+      var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      var dateTime = date+' '+time;
+
+      this.storage.get('user').then((val) => {
+        if (val)
+        {
+          try
+          {
+            this.afs.firestore.doc('/Answers/'+val).collection("Modules").doc(dateTime).set(data);
+          }
+          catch (e) {
+            //this.questionsType = "Unable to Store Answer";
+            alert("Unable to Store Answer");
+          }
+        }
+      });
     }
 
     ionViewDidLoad() {
