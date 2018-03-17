@@ -1,0 +1,68 @@
+<ion-content>
+  <ion-item>
+    <ion-label floating>Module ID</ion-label>
+    <ion-input type="text" [(ngModel)]="mID"></ion-input>
+  </ion-item>
+
+  <button ion-button (click)="startModule()">Start Module</button>
+  <button ion-button *ngIf="base == 'true'" (click)="startModule()">Get Base Line Module</button>
+
+  <ion-item  *ngIf="questionsType != 'Invalid' && questionsType != 'End of Module'">
+      <h1></h1>
+      {{ questionText }}
+      <p></p>
+  </ion-item>
+
+  <ion-item  *ngIf="questionsType == 'End of Module'">
+      <h1></h1>
+      End of Module
+      <p></p>
+  </ion-item>
+
+
+
+  <ion-list *ngIf="questionsType == 'radio'" radio-group [(ngModel)]="userInfo.ans">
+    <ion-item *ngFor="let option of options; let i = index;">
+      <ion-label>{{i}} - {{option}}</ion-label>
+      <ion-radio value={{option}} checked></ion-radio>
+    </ion-item>
+  </ion-list>
+
+  <ion-item *ngIf="questionsType == 'text'">
+    <ion-input type="text" [(ngModel)]="userInfo.ans"></ion-input>
+  </ion-item>
+
+
+  <ion-item *ngIf="questionsType == 'slider'">
+      <ion-range [(ngModel)]="userInfo.ans" min="0" max="100">
+        <ion-icon range-left large name="sad"></ion-icon>
+        <ion-icon range-right large name="happy"></ion-icon>
+      </ion-range>
+  </ion-item>
+
+<!--value="{{key}}">{{key}}
+<ion-item *ngIf="questionsType == 'multi'">
+  <ion-select [(ngModel)]="userInfo.ans" multiple="true">
+    <ion-item *ngFor="let option of options; let i = index;">
+      <ion-label>{{i}} - {{option}}</ion-label>
+      <ion-option value = {{option}}></ion-option>
+    </ion-item>
+  </ion-select>
+  </ion-item>
+-->
+<ion-item *ngIf="questionsType == 'multi'">
+  <ion-select [(ngModel)]="userInfo.ans" multiple="true" placeholder="Click to Select">
+    <ion-option *ngFor="let option of options; let i = index;" value={{i}}>{{i}} - {{option}}</ion-option>
+  </ion-select>
+</ion-item>
+
+  <ion-item *ngIf="questionsType == 'time'">
+    <ion-datetime displayFormat="hh:mm a" placeholder = "Tap Here to Select Time" [(ngModel)]="userInfo.ans"></ion-datetime>
+  </ion-item>
+
+<p padding>The answer provided is {{userInfo.ans}}</p>
+
+<button ion-button (click)="submitQuestion()" *ngIf="questionsType != 'End of Module'">Next</button>
+<button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module'">Submit Module</button>
+
+</ion-content>

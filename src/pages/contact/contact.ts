@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { FormGroup, FormBuilder, FormControl, Validators} from "@angular/forms";
 import { AngularFirestore } from 'angularfire2/firestore';
-import { LoginPage } from '../login/login';
 import { Storage } from '@ionic/storage';
 
 @Component({
@@ -11,13 +9,12 @@ import { Storage } from '@ionic/storage';
 })
 export class ContactPage {
 
-  myForm: FormGroup;
   userInfo: {name: string, ans: any, email: string, phone: string} = {name: '', ans: '', email: '', phone: ''};
   questions: any;
   questionsType: any;
   qID: any;
 
-  constructor(private navController: NavController, private fb: FormBuilder,
+  constructor(private navController: NavController,
     public afs: AngularFirestore, public navCtrl: NavController,
     private storage: Storage) {
 
@@ -51,7 +48,7 @@ export class ContactPage {
       //submit answer to database
       var data = {
         name: 'TEST',
-        [this.questions]: this.userInfo.ans 
+        [this.questions]: this.userInfo.ans
       };
       var today = new Date();
       var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();

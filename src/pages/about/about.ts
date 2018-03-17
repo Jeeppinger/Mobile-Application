@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { Validators, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -11,6 +11,7 @@ export class AboutPage {
   authForm: FormGroup;
 
     constructor(private navController: NavController, private fb: FormBuilder, public navCtrl: NavController) {
+/*
       this.authForm = this.fb.group({
                 'usersex': ['', Validators.compose([Validators.required])],
                 'emotions': ['', Validators.compose([Validators.required])],
@@ -21,8 +22,8 @@ export class AboutPage {
                 'slider1': ['', Validators.compose([Validators.required])],
                 'slider2': ['', Validators.compose([Validators.required])]
             });
+            */
         }
-
     	  logForm(){
     			 }
     }

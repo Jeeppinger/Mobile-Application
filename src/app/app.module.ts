@@ -8,7 +8,9 @@ import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import { LoginPage } from '../pages/login/login';
+import { ModulePage } from '../pages/module/module';
 import { LoginPageModule } from '../pages/login/login.module';
+import { ModulePageModule } from '../pages/module/module.module';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -21,6 +23,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { environment } from './config';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+
 
 
 @NgModule({
@@ -39,7 +42,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
-    LoginPageModule
+    LoginPageModule,
+    ModulePageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -48,7 +52,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     ContactPage,
     HomePage,
     TabsPage,
-    LoginPage
+    LoginPage,
+    ModulePage
   ],
   providers: [
     StatusBar,
