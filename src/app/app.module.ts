@@ -9,8 +9,10 @@ import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import { LoginPage } from '../pages/login/login';
 import { ModulePage } from '../pages/module/module';
+import { BaselinePage } from '../pages/baseline/baseline';
 import { LoginPageModule } from '../pages/login/login.module';
 import { ModulePageModule } from '../pages/module/module.module';
+import { BaselinePageModule } from '../pages/baseline/baseline.module';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -43,7 +45,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     AngularFireAuthModule,
     AngularFireDatabaseModule,
     LoginPageModule,
-    ModulePageModule
+    ModulePageModule,
+    BaselinePageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -53,7 +56,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     HomePage,
     TabsPage,
     LoginPage,
-    ModulePage
+    ModulePage,
+    BaselinePage
   ],
   providers: [
     StatusBar,

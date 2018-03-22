@@ -7,7 +7,7 @@ import { TabsPage } from '../tabs/tabs';
 import * as localforage from "localforage";
 
 /**
- * Generated class for the ModulePage page.
+ * Generated class for the BaselinePage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -15,10 +15,10 @@ import * as localforage from "localforage";
 
 @IonicPage()
 @Component({
-  selector: 'page-module',
-  templateUrl: 'module.html',
+  selector: 'page-baseline',
+  templateUrl: 'baseline.html',
 })
-export class ModulePage {
+export class BaselinePage {
 
   userInfo: {name: string, ans: any, email: string, phone: string} = {name: '', ans: '', email: '', phone: ''};
   branching: any = {};
@@ -30,6 +30,9 @@ export class ModulePage {
   mod: any;
   base: any;
   options: any;
+  started: any;
+  sleep_start: any;
+  sleep_end: any;
 
   constructor(public afs: AngularFirestore, public navCtrl: NavController,
     public navParams: NavParams) {
@@ -42,15 +45,6 @@ export class ModulePage {
         this.mID = "" + this.mod;
         this.startModule();
       }
-    }
-
-    /*
-      This function takes in the user's answer and decides which answer should
-      be displayed next.
-    */
-    public getNextQuestion(answer){
-
-
     }
 
 
@@ -114,6 +108,7 @@ export class ModulePage {
                 self.branching = module.branching;
                 self.qID = questionID;
                 self.resetQuestion(questionID);
+                self.started = 'yes';
               }
             }).catch(function(err) {
                 // This code runs if there were any errors
@@ -127,34 +122,22 @@ export class ModulePage {
     }
 
     submitModule(){
-      if (this.moduleType == 'Time Initiated'){
-        let self = this;
-        localforage.getItem(this.mID).then(function(value) {
-            // This code runs once the value has been loaded
-            // from the offline store.
-            var temp: any = {};
-            temp = value;
-            if (value == null){
-              alert('failure');
-            }
-            else {
-              temp.triggered = 'no';
-              //store it back
-              localforage.setItem(self.mID, temp).then(function (value) {
-              // Do other things once the value has been saved.
-              console.log(value);
-              }).catch(function(err) {
-                  // This code runs if there were any errors
-                  console.log(err);
-              });
-            }
-        }).catch(function(err) {
-            // This code runs if there were any errors
-            console.log(err);
-        });
-      }
-      this.navCtrl.push(TabsPage);
+      var start_sleep = "" + this.sleep_start;
+      var end_sleep = "" + this.sleep_end;
 
+      start_sleep = start_sleep.substring(0,2);
+      end_sleep = end_sleep.substring(0,2);
+
+      var start_sleep_toStore = +start_sleep;
+      var end_sleep_toStore = +end_sleep;
+
+      var sleep = {
+          sleep_start: start_sleep_toStore,
+          sleep_end: end_sleep_toStore
+      };
+
+      localforage.setItem("sleep", sleep);
+      this.navCtrl.push(TabsPage);
       //submit answer to database
       /*
       var data = {

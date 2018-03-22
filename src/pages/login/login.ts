@@ -9,10 +9,14 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import { TabsPage } from '../tabs/tabs';
-import { HomePage } from '../home/home';
+
 import { ModulePage } from '../module/module';
+import { BaselinePage } from '../baseline/baseline';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
 import * as localforage from "localforage";
+
+declare var cordova;
 
 export interface Participant {
   id:string;
@@ -28,7 +32,7 @@ interface Branch {
   templateUrl: 'login.html'
 })
 export class LoginPage {
-
+  cordova: any;
   user:any;
   participants: Observable<any[]>;
   baseModuletoReturn: any = {};
@@ -65,7 +69,7 @@ export class LoginPage {
         studyID.then(function(id) {
           self.getModules(id);
         });
-        this.appCtrl.getRootNav().setRoot(ModulePage, {
+        this.appCtrl.getRootNav().setRoot(BaselinePage, {
           start: 'true',
           type: 'base'
         });
@@ -97,8 +101,8 @@ export class LoginPage {
 
   storeModules(arrayOfModuleIDs){
     let self = this;
-    var userInitiated = [];
-    var timeInitiated = [];
+
+
     var branchArray: any;
     var uiModules: any;
     var tiModules: any;
@@ -189,17 +193,21 @@ export class LoginPage {
           });
         questions.then(async function(id) {
           var tiModule = {
+              id: "TImod"+ tiKey,
               type: modType,
               questionIDs: id,
               branching: branches,
+              triggered: 'no',
               name: modName
               // WILL NEED TO INPUT TIME INTERVAL
           };
 
           //push the created User Initiated module to the uiModules array
           tiModules.push(tiModule);
-          var keyStorage = "TImod"+ tiKey++;
+          var keyStorage = "TImod"+ tiKey;
           //WILL NEED TO SCHEDULE NOTIFICATION
+          self.scheduleModule(keyStorage);
+          tiKey++
           await localforage.setItem(keyStorage, tiModule).then(function (value) {
           // Do other things once the value has been saved.
           console.log(value);
@@ -255,6 +263,30 @@ export class LoginPage {
       });
     });
 
+  }
+
+  scheduleModule(id) {
+    var test = new Date(new Date().getTime() + (2*60*1000));
+    var today = test.getHours();
+    if (today >= 8 && today <= 22) {
+      //time is valid
+      cordova.plugins.notification.local.schedule({
+        id: 1,
+        title: 'Attention',
+        text: 'Test Notification',
+        data: { notiID: id,
+                every: 'hour'},
+        //firstAt: monday,
+        //every: "minute"
+        at: new Date(new Date().getTime() + (2*60*1000)),
+        badge: 1,
+      });
+      alert("notification created for " + id + "at " + test);
+    }
+
+    else {
+
+    }
   }
 
   storeQuestions(id){

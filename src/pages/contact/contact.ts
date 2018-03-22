@@ -1,93 +1,90 @@
+import { NavController, ToastController, NavParams } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AlertController, Platform } from 'ionic-angular';
+import { LoginPage } from '../login/login';
+import { ModulePage } from '../module/module';
 import { Storage } from '@ionic/storage';
+import { App } from 'ionic-angular';
+import { AngularFirestore } from 'angularfire2/firestore';
+import 'rxjs/add/operator/map';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { AngularFirestoreCollection } from 'angularfire2/firestore';
+import * as localforage from "localforage";
+
+declare var cordova;
+
+export interface Question {
+  name:string;
+  qtext:string;
+  type:string;
+}
+
+
 
 @Component({
   selector: 'page-contact',
   templateUrl: 'contact.html'
 })
 export class ContactPage {
+  cordova: any;
+  participantsCollectionRef:any;
+  participants: any;
 
-  userInfo: {name: string, ans: any, email: string, phone: string} = {name: '', ans: '', email: '', phone: ''};
+  questionsCollectionRef: AngularFirestoreCollection<Question>;
   questions: any;
-  questionsType: any;
-  qID: any;
+  timeInitiatedModules: any;
+  done: any;
 
-  constructor(private navController: NavController,
-    public afs: AngularFirestore, public navCtrl: NavController,
-    private storage: Storage) {
-
-
-    }
-
-    resetQuestion(){
-      try
-      {
-        this.afs.firestore.doc('/Questions/'+this.qID).get()
-        .then(docSnapshot => {
-          if (docSnapshot.exists) {
-            // store qtext
-            this.questionsType = docSnapshot.data().type;
-            this.questions = docSnapshot.data().qtext;
-          }
-          else
-          {
-            this.questionsType = "Invalid";
-            alert('Invalid Question ID');
-          }
-        });
-      }
-      catch (e) {
-        this.questionsType = "Invalid";
-        alert(e);
-      }
-    }
-
-    submitQuestion(){
-      //submit answer to database
-      var data = {
-        name: 'TEST',
-        [this.questions]: this.userInfo.ans
-      };
-      var today = new Date();
-      var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-      var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      var dateTime = date+' '+time;
-
-      this.storage.get('user').then((val) => {
-        if (val)
-        {
-          try
-          {
-            this.afs.firestore.doc('/Answers/'+val).collection("Modules").doc(dateTime).set(data);
-          }
-          catch (e) {
-            //this.questionsType = "Unable to Store Answer";
-            alert("Unable to Store Answer");
-          }
-        }
-      });
-    }
-
-    ionViewDidLoad() {
-      /*
-      var counter = 0;
-      var localQuestions = [];
-      var localQuestionsType = [];
-      //get all documents in a collection
-      this.afs.firestore.collection("Questions").get().then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-          // doc.data() is never undefined for query doc snapshots
-          console.log(doc.id, " => ", doc.data());
-          localQuestions[counter] = doc.data().qtext;
-          localQuestionsType[counter] = doc.data().type;
-          counter++;
-      });
-    });
-    this.questions = localQuestions;
-    this.questionsType = localQuestionsType;
-    */
-    }
-
+  constructor(public storage: Storage, private toast: ToastController,
+    public alertCtrl: AlertController,
+    public navCtrl: NavController, public appCtrl: App,
+    public afs: AngularFirestore, public splashScreen: SplashScreen,
+    public navParams: NavParams) {
   }
+
+
+  startModule(id){
+    //we will need to get the module ID
+    let modID = this.timeInitiatedModules[id].id;
+    this.appCtrl.getRootNav().setRoot(ModulePage, {
+      mID: modID,
+      type: 'Time Initiated'
+    });
+  }
+
+  initializeModules(){
+    var counter = 0;
+    this.done = 'false';
+    var key;
+    let self = this;
+    this.timeInitiatedModules = [];
+
+    while (this.done == 'false' && counter < 10){
+      key = "TImod" + counter;
+      localforage.getItem(key).then(function(value) {
+          // This code runs once the value has been loaded
+          // from the offline store.
+          var temp: any = {};
+          temp = value;
+          if (value == null){
+            self.done = 'true';
+          }
+          else {
+            if (temp.triggered == 'yes'){
+                self.timeInitiatedModules.push(value);
+            }
+          }
+      }).catch(function(err) {
+          // This code runs if there were any errors
+          console.log(err);
+          self.done = 'true';
+      });
+      counter++;
+    }
+  }
+
+  ionViewDidLoad() {
+    this.initializeModules();
+
+}
+}

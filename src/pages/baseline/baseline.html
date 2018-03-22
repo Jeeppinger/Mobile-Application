@@ -1,10 +1,10 @@
 <ion-content>
-  <ion-item>
-    <ion-label floating>Module ID</ion-label>
-    <ion-input type="text" [(ngModel)]="mID"></ion-input>
+  <ion-item  *ngIf="started != 'yes'">
+    <h2>You have sucessfully registed for study ____.</h2>
+    <h3>Click the button below to start the first module.</h3>
   </ion-item>
 
-  <button ion-button (click)="startModule()">Start Module</button>
+  <button ion-button (click)="startModule()" *ngIf="started != 'yes'">Start Module</button>
 
   <ion-item  *ngIf="questionsType != 'Invalid' && questionsType != 'End of Module'">
       <h1></h1>
@@ -13,9 +13,15 @@
   </ion-item>
 
   <ion-item  *ngIf="questionsType == 'End of Module'">
-      <h1></h1>
-      End of Module
-      <p></p>
+      <h2>Set your sleep times:</h2>
+  </ion-item>
+
+  <ion-item  *ngIf="questionsType == 'End of Module'">
+      <ion-datetime displayFormat="hh a" placeholder = "When do you sleep?" [(ngModel)]="sleep_start"></ion-datetime>
+  </ion-item>
+
+  <ion-item  *ngIf="questionsType == 'End of Module'">
+      <ion-datetime displayFormat="hh a" placeholder = "When do you wake up?" [(ngModel)]="sleep_end"></ion-datetime>
   </ion-item>
 
 
@@ -39,16 +45,6 @@
       </ion-range>
   </ion-item>
 
-<!--value="{{key}}">{{key}}
-<ion-item *ngIf="questionsType == 'multi'">
-  <ion-select [(ngModel)]="userInfo.ans" multiple="true">
-    <ion-item *ngFor="let option of options; let i = index;">
-      <ion-label>{{i}} - {{option}}</ion-label>
-      <ion-option value = {{option}}></ion-option>
-    </ion-item>
-  </ion-select>
-  </ion-item>
--->
 <ion-item *ngIf="questionsType == 'multi'">
   <ion-select [(ngModel)]="userInfo.ans" multiple="true" placeholder="Click to Select">
     <ion-option *ngFor="let option of options; let i = index;" value={{i}}>{{i}} - {{option}}</ion-option>
@@ -62,6 +58,6 @@
 <p padding>The answer provided is {{userInfo.ans}}</p>
 
 <button ion-button (click)="submitQuestion()" *ngIf="questionsType != 'End of Module' && userInfo.ans != ''">Next</button>
-<button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module'">Submit Module</button>
+<button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module' && sleep_start != '' && sleep_end != ''">Submit Module</button>
 
 </ion-content>

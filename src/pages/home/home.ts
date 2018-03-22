@@ -36,7 +36,7 @@ export class HomePage {
   done: any;
 
   constructor(public storage: Storage, private toast: ToastController,
-    private plt: Platform, public alertCtrl: AlertController,
+    public alertCtrl: AlertController,
     public navCtrl: NavController, public appCtrl: App,
     public afs: AngularFirestore, public splashScreen: SplashScreen,
     public navParams: NavParams) {
@@ -54,16 +54,19 @@ export class HomePage {
 
   logout(){
     this.storage.remove('user');
-    this.storage.remove('uiModules');
     this.storage.remove('study_id');
-    //this.storage.remove('tiModules');
+
+    cordova.plugins.notification.local.cancelAll(function() {
+        console.log('Notifications cancelled. ');
+    }, this);
+    
     localforage.clear().then(function() {
     // Run this code once the database has been entirely deleted.
     console.log('Database is now empty.');
-}).catch(function(err) {
-    // This code runs if there were any errors
-    console.log(err);
-});
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+    });
     this.appCtrl.getRootNav().setRoot(LoginPage);
   }
 
@@ -155,7 +158,7 @@ export class HomePage {
 
           var counter = 0;
           var localQuestions = [];
-          var localModules = [];
+
           //get all documents in a collection
           this.afs.firestore.collection("Questions").get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
