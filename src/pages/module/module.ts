@@ -164,7 +164,9 @@ export class ModulePage {
       }
       else if (this.moduleType == 'Time Initiated'){
         modKey = this.mID;
-        //this.badge.decrease(1);
+              cordova.plugins.notification.badge.decrease(1, function (badge) {
+          // decrease badge
+      });
       }
       else if (this.moduleType == 'User Initiated'){
         modKey = "UImod" + this.mID;

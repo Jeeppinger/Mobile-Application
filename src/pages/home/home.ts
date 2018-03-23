@@ -59,7 +59,7 @@ export class HomePage {
     cordova.plugins.notification.local.cancelAll(function() {
         console.log('Notifications cancelled. ');
     }, this);
-    //this.badge.clear();
+    cordova.plugins.notification.badge.clear();
     localforage.clear().then(function() {
     // Run this code once the database has been entirely deleted.
     console.log('Database is now empty.');

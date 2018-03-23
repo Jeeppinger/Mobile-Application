@@ -87,7 +87,7 @@ export class BacklogPage {
     if (this.timeInitiatedModules.length == 0)
     {
       //clear badge because no backlog
-      //this.badge.clear();
+      cordova.plugins.notification.badge.clear();
     }
 }
 }

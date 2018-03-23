@@ -29,7 +29,6 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       //splashScreen.hide();
-      //cordova.plugins.backgroundMode.enable();
       let self = this;
       try
       {
@@ -66,7 +65,9 @@ export class MyApp {
         //will need to keep a queue of all the backlogs
         //backlogs will be cleared once the modules have been completed
         self.rescheduleModule(notification.data.notiID);
-        //badge.increase(1);
+        cordova.plugins.notification.badge.increase(1, function (badge) {
+          // increase badge
+      });
       });
 
 

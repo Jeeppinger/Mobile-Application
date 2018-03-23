@@ -56,7 +56,7 @@ export class LoginPage {
             this.storage.set('user', this.user);
             studyID = docSnapshot.data().study_id;
             this.storage.set('study_id', studyID);
-            //this.badge.set(0);
+            cordova.plugins.notification.badge.set(0);
             this.appCtrl.getRootNav().setRoot(BaselinePage, {
               start: 'true',
               type: 'base',
