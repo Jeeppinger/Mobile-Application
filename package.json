@@ -20,6 +20,8 @@
     "@angular/http": "5.0.3",
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
+    "@ionic-native/background-mode": "^4.6.0",
+    "@ionic-native/badge": "^4.6.0",
     "@ionic-native/core": "4.4.0",
     "@ionic-native/local-notifications": "^4.5.3",
     "@ionic-native/splash-screen": "4.4.0",
@@ -28,6 +30,7 @@
     "angularfire2": "^5.0.0-rc.6",
     "cordova-android": "7.0.0",
     "cordova-ios": "4.5.4",
+    "cordova-plugin-background-mode": "^0.7.2",
     "cordova-plugin-badge": "^0.8.7",
     "cordova-plugin-device": "^2.0.1",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
@@ -59,7 +62,9 @@
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-ionic-keyboard": {}
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-badge": {},
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
       "ios",

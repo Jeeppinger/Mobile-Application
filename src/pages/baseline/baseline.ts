@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { Storage } from '@ionic/storage';
 import { AngularFirestore } from 'angularfire2/firestore';
 import 'rxjs/add/operator/map';
 import { TabsPage } from '../tabs/tabs';
@@ -22,6 +22,7 @@ export class BaselinePage {
 
   userInfo: {name: string, ans: any, email: string, phone: string} = {name: '', ans: '', email: '', phone: ''};
   branching: any = {};
+  answers: any = {};
   questionsType: any;
   questionsText: any;
   moduleType: any;
@@ -33,12 +34,16 @@ export class BaselinePage {
   started: any;
   sleep_start: any;
   sleep_end: any;
+  study: any;
 
   constructor(public afs: AngularFirestore, public navCtrl: NavController,
-    public navParams: NavParams) {
+    public navParams: NavParams, public storage: Storage) {
       //initial sign in
       this.base = navParams.get('start');
       this.moduleType = navParams.get('type');
+      this.study = navParams.get('study');
+      this.sleep_end = '';
+      this.sleep_start = '';
 
       if (this.base != 'true'){
         this.mod = navParams.get('mID');
@@ -70,7 +75,7 @@ export class BaselinePage {
             }
           }).catch(function(err) {
               // This code runs if there were any errors
-              //console.log(err);
+              console.log(err);
           });
 
     }
@@ -122,6 +127,9 @@ export class BaselinePage {
     }
 
     submitModule(){
+      this.answers[this.qID] = this.userInfo.ans;
+
+      //submit answer to database
       var start_sleep = "" + this.sleep_start;
       var end_sleep = "" + this.sleep_end;
 
@@ -137,24 +145,45 @@ export class BaselinePage {
       };
 
       localforage.setItem("sleep", sleep);
-      this.navCtrl.push(TabsPage);
-      //submit answer to database
-      /*
-      var data = {
-        name: 'TEST',
-        [this.questions]: this.userInfo.ans
-      };
+
       var today = new Date();
       var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
       var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
       var dateTime = date+' '+time;
+      let self = this;
+      var modKey: any;
+
+      if (this.moduleType == 'base'){
+        modKey = "base";
+      }
+      else if (this.moduleType == 'Time Initiated'){
+        modKey = this.mID;
+      }
+      else if (this.moduleType == 'User Initiated'){
+        modKey = "UImod" + this.mID;
+      }
 
       this.storage.get('user').then((val) => {
         if (val)
         {
           try
           {
-            this.afs.firestore.doc('/Answers/'+val).collection("Modules").doc(dateTime).set(data);
+            localforage.getItem(modKey).then(function(value) {
+                // This code runs once the value has been loaded
+                // from the offline store.
+                var temp: any = {};
+                temp = value;
+                var firestoreID = temp.modID;
+                if (value == null){
+                  alert('failure');
+                }
+                else {
+                  self.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
+                }
+            }).catch(function(err) {
+                // This code runs if there were any errors
+                console.log(err);
+            });
           }
           catch (e) {
             //this.questionsType = "Unable to Store Answer";
@@ -162,19 +191,29 @@ export class BaselinePage {
           }
         }
       });
-      */
+      this.navCtrl.push(TabsPage);
     }
 
     submitQuestion(){
+      this.answers[this.qID] = this.userInfo.ans;
       var nextQ = this.branching[this.qID];
       if (nextQ[0] == '-1'){
         this.questionsType = "End of Module";
       }
-      else{
-        //will need to replace 0 with answer index
+      else if (nextQ.length == 1){
+        //no branching
         this.qID = nextQ[0];
         this.userInfo.ans = "";
         this.resetQuestion(nextQ[0]);
+      }
+      else{
+        //branching
+        //get index of answer, only possible for radio right now
+        var index = this.options.indexOf(this.userInfo.ans);
+        alert("next: " + index);
+        this.qID = nextQ[index];
+        this.userInfo.ans = "";
+        this.resetQuestion(nextQ[index]);
       }
 
     }

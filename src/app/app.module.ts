@@ -2,9 +2,8 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
-
 import { AboutPage } from '../pages/about/about';
-import { ContactPage } from '../pages/contact/contact';
+import { BacklogPage } from '../pages/backlog/backlog';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import { LoginPage } from '../pages/login/login';
@@ -32,7 +31,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
   declarations: [
     MyApp,
     AboutPage,
-    ContactPage,
+    BacklogPage,
     HomePage,
     TabsPage
   ],
@@ -52,7 +51,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
   entryComponents: [
     MyApp,
     AboutPage,
-    ContactPage,
+    BacklogPage,
     HomePage,
     TabsPage,
     LoginPage,

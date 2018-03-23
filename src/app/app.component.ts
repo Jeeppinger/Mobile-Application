@@ -7,7 +7,6 @@ import { LoginPage } from '../pages/login/login';
 import { TabsPage } from '../pages/tabs/tabs';
 import { App } from 'ionic-angular';
 import { ModulePage } from '../pages/module/module';
-
 import * as localforage from "localforage";
 declare var cordova;
 
@@ -30,6 +29,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       //splashScreen.hide();
+      //cordova.plugins.backgroundMode.enable();
       let self = this;
       try
       {
@@ -65,8 +65,8 @@ export class MyApp {
       cordova.plugins.notification.local.on("trigger", function(notification) {
         //will need to keep a queue of all the backlogs
         //backlogs will be cleared once the modules have been completed
-        //alert("triggered: " + notification.id);
         self.rescheduleModule(notification.data.notiID);
+        //badge.increase(1);
       });
 
 
@@ -80,7 +80,7 @@ export class MyApp {
         var temp1: any = {};
         temp1 = value1;
         if (value1 == null){
-          alert('failure');
+          alert('failure1');
         }
         else {
           var test = new Date(new Date().getTime() + (2*60*1000));
@@ -90,6 +90,7 @@ export class MyApp {
           self.sleep_end = temp1.sleep_end;
 
           if (today >= self.sleep_end && today <= self.sleep_start) {
+
             //time is valid
             cordova.plugins.notification.local.schedule({
               id: 1,
@@ -100,9 +101,8 @@ export class MyApp {
               //firstAt: monday,
               //every: "minute"
               at: new Date(new Date().getTime() + (2*60*1000)),
-              badge: 1,
             });
-            alert("notification created for " + id + "at " + test);
+
           }
 
           else {
@@ -120,7 +120,7 @@ export class MyApp {
         var temp: any = {};
         temp = value;
         if (value == null){
-          alert('failure');
+          alert('failure2');
         }
         else {
           if (temp.triggered == 'yes'){

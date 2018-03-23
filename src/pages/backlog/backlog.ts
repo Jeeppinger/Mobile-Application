@@ -10,7 +10,6 @@ import 'rxjs/add/operator/map';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AngularFirestoreCollection } from 'angularfire2/firestore';
 import * as localforage from "localforage";
-
 declare var cordova;
 
 export interface Question {
@@ -22,10 +21,10 @@ export interface Question {
 
 
 @Component({
-  selector: 'page-contact',
-  templateUrl: 'contact.html'
+  selector: 'page-backlog',
+  templateUrl: 'backlog.html'
 })
-export class ContactPage {
+export class BacklogPage {
   cordova: any;
   participantsCollectionRef:any;
   participants: any;
@@ -85,6 +84,10 @@ export class ContactPage {
 
   ionViewDidLoad() {
     this.initializeModules();
-
+    if (this.timeInitiatedModules.length == 0)
+    {
+      //clear badge because no backlog
+      //this.badge.clear();
+    }
 }
 }

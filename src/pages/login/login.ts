@@ -4,7 +4,6 @@ import { Storage } from '@ionic/storage';
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import { App } from 'ionic-angular';
-
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -57,21 +56,24 @@ export class LoginPage {
             this.storage.set('user', this.user);
             studyID = docSnapshot.data().study_id;
             this.storage.set('study_id', studyID);
+            //this.badge.set(0);
+            this.appCtrl.getRootNav().setRoot(BaselinePage, {
+              start: 'true',
+              type: 'base',
+              study: studyID
+            });
             return studyID;
           }
           else
           {
             alert('Invalid Login');
+            return;
           }
         });
         let self = this;
 
         studyID.then(function(id) {
           self.getModules(id);
-        });
-        this.appCtrl.getRootNav().setRoot(BaselinePage, {
-          start: 'true',
-          type: 'base'
         });
     }
     catch (e) {
@@ -111,7 +113,7 @@ export class LoginPage {
     var tiKey = 0;
 
     //iterate through each module ID
-    arrayOfModuleIDs.forEach(function (id) {
+    arrayOfModuleIDs.forEach(function (ModID) {
 
       uiModules = []; //holds all User Initiated Module Objects
       tiModules = []; //holds all Time Initiated Module Objects
@@ -120,12 +122,12 @@ export class LoginPage {
       //baseModule = {};
       branches = {}; //holds all branching logic of a current module
       //get the module in Firestore
-      self.afs.firestore.doc('/Modules/'+ id).get().then(querySnapshot => {
+      self.afs.firestore.doc('/Modules/'+ ModID).get().then(querySnapshot => {
         var modType = querySnapshot.data().type;
         var modName = querySnapshot.data().name;
         if (modType == "User Initiated")
         {
-          questions = self.afs.firestore.doc('/Modules/'+ id).collection("Questions").get().then(function(querySnapshot) {
+          questions = self.afs.firestore.doc('/Modules/'+ ModID).collection("Questions").get().then(function(querySnapshot) {
             var questionsArray = [];
             let that = self;
             //iterate through each question in the module
@@ -151,9 +153,9 @@ export class LoginPage {
               type: modType,
               questionIDs: id,
               branching: branches,
-              name: modName
+              name: modName,
+              modID: ModID
           };
-
           //push the created User Initiated module to the uiModules array
           uiModules.push(uiModule);
           var keyStorage = "UImod"+ key++;
@@ -170,7 +172,7 @@ export class LoginPage {
 
         else if (modType == "Time Initiated")
         {
-          questions = self.afs.firestore.doc('/Modules/'+ id).collection("Questions").get().then(function(querySnapshot) {
+          questions = self.afs.firestore.doc('/Modules/'+ ModID).collection("Questions").get().then(function(querySnapshot) {
             var questionsArray = [];
             let that = self;
             //iterate through each question in the module
@@ -198,7 +200,8 @@ export class LoginPage {
               questionIDs: id,
               branching: branches,
               triggered: 'no',
-              name: modName
+              name: modName,
+              modID: ModID
               // WILL NEED TO INPUT TIME INTERVAL
           };
 
@@ -220,7 +223,7 @@ export class LoginPage {
 
         else if (modType == "Base Line")
         {
-          questions = self.afs.firestore.doc('/Modules/'+ id).collection("Questions").get().then(function(querySnapshot) {
+          questions = self.afs.firestore.doc('/Modules/'+ ModID).collection("Questions").get().then(function(querySnapshot) {
             var questionsArray = [];
             let that = self;
             //iterate through each question in the module
@@ -247,7 +250,8 @@ export class LoginPage {
               type: modType,
               questionIDs: id,
               branching: branches,
-              name: modName
+              name: modName,
+              modID: ModID
           };
           localforage.setItem("base", base).then(function (value) {
           // Do other things once the value has been saved.
@@ -278,8 +282,7 @@ export class LoginPage {
                 every: 'hour'},
         //firstAt: monday,
         //every: "minute"
-        at: new Date(new Date().getTime() + (2*60*1000)),
-        badge: 1,
+        at: new Date(new Date().getTime() + (2*60*1000))
       });
       alert("notification created for " + id + "at " + test);
     }
