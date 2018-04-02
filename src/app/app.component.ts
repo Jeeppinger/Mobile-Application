@@ -64,7 +64,7 @@ export class MyApp {
       cordova.plugins.notification.local.on("trigger", function(notification) {
         //will need to keep a queue of all the backlogs
         //backlogs will be cleared once the modules have been completed
-        self.rescheduleModule(notification.data.notiID);
+        self.triggerModule(notification.data.notiID);
         cordova.plugins.notification.badge.increase(1, function (badge) {
           // increase badge
       });
@@ -74,46 +74,7 @@ export class MyApp {
     });
   }
 
-  rescheduleModule(id) {
-    let self = this;
-
-    localforage.getItem("sleep").then(function(value1) {
-        var temp1: any = {};
-        temp1 = value1;
-        if (value1 == null){
-          alert('failure1');
-        }
-        else {
-          var test = new Date(new Date().getTime() + (2*60*1000));
-          var today = test.getHours();
-
-          self.sleep_start = temp1.sleep_start;
-          self.sleep_end = temp1.sleep_end;
-
-          if (today >= self.sleep_end && today <= self.sleep_start) {
-
-            //time is valid
-            cordova.plugins.notification.local.schedule({
-              id: 1,
-              title: 'Attention',
-              text: 'Test Notification',
-              data: { notiID: id,
-                      every: 'hour'},
-              //firstAt: monday,
-              //every: "minute"
-              at: new Date(new Date().getTime() + (2*60*1000)),
-            });
-
-          }
-
-          else {
-
-          }
-        }
-    }).catch(function(err) {
-        // This code runs if there were any errors
-        console.log(err);
-    });
+  triggerModule(id) {
 
     localforage.getItem(id).then(function(value) {
         // This code runs once the value has been loaded

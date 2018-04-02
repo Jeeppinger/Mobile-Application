@@ -13,15 +13,7 @@
   </ion-item>
 
   <ion-item  *ngIf="questionsType == 'End of Module'">
-      <h2>Set your sleep times:</h2>
-  </ion-item>
-
-  <ion-item  *ngIf="questionsType == 'End of Module'">
-      <ion-datetime displayFormat="hh a" placeholder = "When do you sleep?" [(ngModel)]="sleep_start"></ion-datetime>
-  </ion-item>
-
-  <ion-item  *ngIf="questionsType == 'End of Module'">
-      <ion-datetime displayFormat="hh a" placeholder = "When do you wake up?" [(ngModel)]="sleep_end"></ion-datetime>
+      <h2>End of Baseline Module</h2>
   </ion-item>
 
 
@@ -57,7 +49,8 @@
 
 <p padding>The answer provided is {{userInfo.ans}}</p>
 
+<button ion-button (click)="prevQuestion()" *ngIf="counter > 0">Previous</button>
 <button ion-button (click)="submitQuestion()" *ngIf="questionsType != 'End of Module' && userInfo.ans != ''">Next</button>
-<button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module' && sleep_start != '' && sleep_end != ''">Submit Module</button>
+<button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module'">Submit Module</button>
 
 </ion-content>

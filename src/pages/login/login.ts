@@ -36,12 +36,63 @@ export class LoginPage {
   participants: Observable<any[]>;
   baseModuletoReturn: any = {};
   allQuestions: any = [];
+  authenticated: any = '';
+  sleep_start: any;
+  sleep_end: any;
 
   constructor(public afAuth: AngularFireAuth, public afs: AngularFirestore,
     public navCtrl: NavController, public navParams: NavParams,
     public storage: Storage, public splashScreen: SplashScreen,
     public appCtrl: App) {
       splashScreen.show();
+  }
+
+  authenticateUser(){
+    try
+    {
+      let self = this;
+      this.afs.firestore.doc('/Participants/'+this.user).get()
+        .then(docSnapshot => {
+          if (docSnapshot.exists) {
+            self.authenticated = 'true';
+          }
+          else
+          {
+            alert('Invalid Login');
+          }
+        });
+    }
+    catch (e) {
+      alert(e);
+    }
+  }
+
+  storeSleepTimes(){
+    //submit answer to database
+    var start_sleep = "" + this.sleep_start;
+    var end_sleep = "" + this.sleep_end;
+
+    start_sleep = start_sleep.substring(0,2);
+    end_sleep = end_sleep.substring(0,2);
+
+    var start_sleep_toStore = +start_sleep;
+    var end_sleep_toStore = +end_sleep;
+
+    var sleep = {
+        sleep_start: start_sleep_toStore,
+        sleep_end: end_sleep_toStore
+    };
+
+    let self = this;
+
+    localforage.setItem("sleep", sleep).then(function (value) {
+    // Do other things once the value has been saved.
+    self.login();
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+    });
+
   }
 
   login(){
@@ -172,6 +223,7 @@ export class LoginPage {
 
         else if (modType == "Time Initiated")
         {
+          var interval = querySnapshot.data().every;
           questions = self.afs.firestore.doc('/Modules/'+ ModID).collection("Questions").get().then(function(querySnapshot) {
             var questionsArray = [];
             let that = self;
@@ -201,15 +253,15 @@ export class LoginPage {
               branching: branches,
               triggered: 'no',
               name: modName,
-              modID: ModID
-              // WILL NEED TO INPUT TIME INTERVAL
+              modID: ModID,
+              interval: interval
           };
 
           //push the created User Initiated module to the uiModules array
           tiModules.push(tiModule);
           var keyStorage = "TImod"+ tiKey;
           //WILL NEED TO SCHEDULE NOTIFICATION
-          self.scheduleModule(keyStorage);
+          self.scheduleModule(keyStorage, interval);
           tiKey++
           await localforage.setItem(keyStorage, tiModule).then(function (value) {
           // Do other things once the value has been saved.
@@ -269,27 +321,76 @@ export class LoginPage {
 
   }
 
-  scheduleModule(id) {
-    var test = new Date(new Date().getTime() + (2*60*1000));
-    var today = test.getHours();
-    if (today >= 8 && today <= 22) {
-      //time is valid
-      cordova.plugins.notification.local.schedule({
-        id: 1,
-        title: 'Attention',
-        text: 'Test Notification',
-        data: { notiID: id,
-                every: 'hour'},
-        //firstAt: monday,
-        //every: "minute"
-        at: new Date(new Date().getTime() + (2*60*1000))
-      });
-      alert("notification created for " + id + "at " + test);
-    }
+  scheduleModule(id, interval) {
+      var notifications = [];
+      var notif: any = {};
+      var count = 1;
 
-    else {
+      var start_sleep = "" + this.sleep_start;
+      var end_sleep = "" + this.sleep_end;
 
-    }
+      start_sleep = start_sleep.substring(0,2);
+      end_sleep = end_sleep.substring(0,2);
+
+      var end = +start_sleep;
+      var start = +end_sleep;
+
+      var nextOccurence = new Date();
+      nextOccurence.setHours(start);
+      nextOccurence.setMinutes(0);
+      nextOccurence.setSeconds(0);
+
+      var currentHour = start;
+      var currentMinutes = 0;
+
+      if (start < end){
+        while(currentHour < end)
+        {
+          notif = {
+            id: id + count++,
+            title: 'Attention',
+            text: 'Test Notification',
+            data: { notiID: id},
+            every: { hour: currentHour, minute: currentMinutes },
+            };
+            notifications.push(notif);
+            //alert("notification created for " + id + " at " + currentHour + ":" + currentMinutes);
+            nextOccurence = new Date(nextOccurence.getTime() + interval);
+            currentHour = nextOccurence.getHours();
+            currentMinutes = nextOccurence.getMinutes();
+        }
+      }
+
+      else{
+        var currentTime = new Date();
+        currentTime.setHours(start);
+        currentTime.setMinutes(0);
+        currentTime.setSeconds(0);
+
+        var secondTime = new Date();
+        secondTime.setHours(end);
+        secondTime.setMinutes(0);
+        secondTime.setSeconds(0);
+        secondTime = new Date(secondTime.getTime() + (1000 * 60 * 60 * 24));
+
+        while(currentTime.getTime() < secondTime.getTime())
+        {
+          notif = {
+            id: id + count++,
+            title: 'Attention',
+            text: 'Test Notification',
+            data: { notiID: id},
+            every: { hour: currentHour, minute: currentMinutes },
+          };
+          notifications.push(notif);
+          //alert("notification created for " + id + " at " + currentHour + ":" + currentMinutes);
+          currentTime = new Date(currentTime.getTime() + interval);
+          currentHour = currentTime.getHours();
+          currentMinutes = currentTime.getMinutes();
+        }
+      }
+      cordova.plugins.notification.local.schedule(notifications);
+
   }
 
   storeQuestions(id){

@@ -23,12 +23,11 @@
   </ion-item>
 -->
 <button ion-button full (click)="logout()">Logout</button>
-<button ion-button full (click)="scheduleNotification()">Schedule Notification</button>
     <ion-list>
       <ion-list-header>Select the event-type you wish to log.</ion-list-header>
       <ion-item  *ngFor="let module of userInitiatedModules; let i = index;">
         <button ion-button block large  (click)="startModule(i)">
-           {{ i }} - {{ module.name }}
+           {{ module.name }}
          </button>
          <br>
       </ion-item>

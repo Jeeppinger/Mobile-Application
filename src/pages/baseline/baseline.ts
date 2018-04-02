@@ -35,6 +35,8 @@ export class BaselinePage {
   sleep_start: any;
   sleep_end: any;
   study: any;
+  counter: any = 0;
+  completedQIDs: any = [];
 
   constructor(public afs: AngularFirestore, public navCtrl: NavController,
     public navParams: NavParams, public storage: Storage) {
@@ -129,23 +131,6 @@ export class BaselinePage {
     submitModule(){
       this.answers[this.qID] = this.userInfo.ans;
 
-      //submit answer to database
-      var start_sleep = "" + this.sleep_start;
-      var end_sleep = "" + this.sleep_end;
-
-      start_sleep = start_sleep.substring(0,2);
-      end_sleep = end_sleep.substring(0,2);
-
-      var start_sleep_toStore = +start_sleep;
-      var end_sleep_toStore = +end_sleep;
-
-      var sleep = {
-          sleep_start: start_sleep_toStore,
-          sleep_end: end_sleep_toStore
-      };
-
-      localforage.setItem("sleep", sleep);
-
       var today = new Date();
       var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
       var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -195,7 +180,9 @@ export class BaselinePage {
     }
 
     submitQuestion(){
+      this.counter++;
       this.answers[this.qID] = this.userInfo.ans;
+      this.completedQIDs.push(this.qID);
       var nextQ = this.branching[this.qID];
       if (nextQ[0] == '-1'){
         this.questionsType = "End of Module";
@@ -216,6 +203,15 @@ export class BaselinePage {
         this.resetQuestion(nextQ[index]);
       }
 
+    }
+
+    prevQuestion(){
+      this.userInfo.ans = "";
+      var key = this.completedQIDs.pop();
+      this.qID = key;
+      this.resetQuestion(key);
+      delete this.answers[key];
+      this.counter--;
     }
 
     ionViewDidLoad() {

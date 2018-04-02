@@ -32,6 +32,8 @@ export class ModulePage {
   mod: any;
   base: any;
   options: any;
+  counter: any = 0;
+  completedQIDs: any = [];
 
   constructor(public afs: AngularFirestore, public navCtrl: NavController,
     public navParams: NavParams, public storage: Storage) {
@@ -81,7 +83,6 @@ export class ModulePage {
         var questionID;
         let self = this;
         var modKey: any;
-
         if (this.moduleType == 'base'){
           modKey = "base";
         }
@@ -164,9 +165,15 @@ export class ModulePage {
       }
       else if (this.moduleType == 'Time Initiated'){
         modKey = this.mID;
-              cordova.plugins.notification.badge.decrease(1, function (badge) {
+
+        cordova.plugins.notification.badge.decrease(1, function (badge) {
           // decrease badge
-      });
+        });
+
+        //clear notification
+        cordova.plugins.notification.local.clear(1, function() {
+            //alert("done");
+        });
       }
       else if (this.moduleType == 'User Initiated'){
         modKey = "UImod" + this.mID;
@@ -204,7 +211,9 @@ export class ModulePage {
     }
 
     submitQuestion(){
+      this.counter++;
       this.answers[this.qID] = this.userInfo.ans;
+      this.completedQIDs.push(this.qID);
       var nextQ = this.branching[this.qID];
       if (nextQ[0] == '-1'){
         this.questionsType = "End of Module";
@@ -225,6 +234,15 @@ export class ModulePage {
         this.resetQuestion(nextQ[index]);
       }
 
+    }
+
+    prevQuestion(){
+      this.userInfo.ans = "";
+      var key = this.completedQIDs.pop();
+      this.qID = key;
+      this.resetQuestion(key);
+      delete this.answers[key];
+      this.counter--;
     }
 
     ionViewDidLoad() {

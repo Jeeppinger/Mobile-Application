@@ -22,7 +22,7 @@
 
   <ion-list *ngIf="questionsType == 'radio'" radio-group [(ngModel)]="userInfo.ans">
     <ion-item *ngFor="let option of options; let i = index;">
-      <ion-label>{{i}} - {{option}}</ion-label>
+      <ion-label>{{option}}</ion-label>
       <ion-radio value={{option}} checked></ion-radio>
     </ion-item>
   </ion-list>
@@ -39,16 +39,6 @@
       </ion-range>
   </ion-item>
 
-<!--value="{{key}}">{{key}}
-<ion-item *ngIf="questionsType == 'multi'">
-  <ion-select [(ngModel)]="userInfo.ans" multiple="true">
-    <ion-item *ngFor="let option of options; let i = index;">
-      <ion-label>{{i}} - {{option}}</ion-label>
-      <ion-option value = {{option}}></ion-option>
-    </ion-item>
-  </ion-select>
-  </ion-item>
--->
 <ion-item *ngIf="questionsType == 'multi'">
   <ion-select [(ngModel)]="userInfo.ans" multiple="true" placeholder="Click to Select">
     <ion-option *ngFor="let option of options; let i = index;" value={{i}}>{{i}} - {{option}}</ion-option>
@@ -61,6 +51,7 @@
 
 <p padding>The answer provided is {{userInfo.ans}}</p>
 
+<button ion-button (click)="prevQuestion()" *ngIf="counter > 0">Previous</button>
 <button ion-button (click)="submitQuestion()" *ngIf="questionsType != 'End of Module' && userInfo.ans != ''">Next</button>
 <button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module'">Submit Module</button>
 
