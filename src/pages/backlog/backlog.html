@@ -6,13 +6,13 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content class = "backlog">
 
 <button ion-button full (click)="initializeModules()">Refresh Backlog</button>
     <ion-list>
       <ion-list-header>Backlog of Time-Based Modules:</ion-list-header>
       <ion-item  *ngFor="let module of timeInitiatedModules; let i = index;">
-        <button ion-button block large  (click)="startModule(i)">
+        <button ion-button block large round (click)="startModule(i)">
            {{ module.name }}
          </button>
          <br>

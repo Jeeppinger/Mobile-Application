@@ -1,3 +1,31 @@
-page-home {
+.home{
+    background-image: url('../assets/imgs/background4.jpg');
+    background-size: 100% 100%;
+}
 
+.backlog {
+    background-image: url('../assets/imgs/background4.jpg');
+    background-size: 100% 100%;
+}
+.listHeader{
+  color: white;
+  background: transparent;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 0px;
+}
+
+.item{
+  background: transparent;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 0px;
+}
+
+.module{
+    position: absolute;
+    top: 35%;
+    font-family: Gill Sans, Verdana;
 }

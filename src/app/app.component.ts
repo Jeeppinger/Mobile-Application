@@ -57,7 +57,7 @@ export class MyApp {
         //we will need to get the module ID
         appCtrl.getRootNav().setRoot(ModulePage, {
           mID: '' + notification.data.notiID,
-          type: 'Time Initiated'
+          type: notification.data.type
         });
         }, this);
 

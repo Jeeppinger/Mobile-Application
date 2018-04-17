@@ -1,37 +1,51 @@
 <ion-header>
   <ion-navbar color="primary">
-    <ion-title>
-      Home Screen
-    </ion-title>
+  <ion-toolbar color="primary">
+
+  <ion-title align = "center">Home</ion-title>
+
+</ion-toolbar>
   </ion-navbar>
 </ion-header>
 
-<ion-content>
-  <!--
-  <ion-item>
-    <h1></h1>
-    {{ participants }}
-    <p></p>
-    <p></p>
-  </ion-item>
+<ion-content class = "home" >
 
-  <ion-item  *ngFor="let question of questions">
-    <h1></h1>
-    {{ question }}
-    <p></p>
-    <p></p>
-  </ion-item>
--->
+  <ion-fab top right edge>
+  <button ion-fab color="light" large><ion-icon name="contact"></ion-icon></button>
+  <ion-fab-list>
+
+      <button ion-fab><ion-icon name="create"></ion-icon></button>
+
+  </ion-fab-list>
+</ion-fab>
+
+<ion-fab top left edge>
+<button ion-fab color="light" large><ion-icon name="settings"></ion-icon></button>
+<ion-fab-list>
+
+    <button ion-fab><ion-icon name="information-circle"></ion-icon></button>
+
+</ion-fab-list>
+</ion-fab>
+
+
 <button ion-button full (click)="logout()">Logout</button>
-    <ion-list>
-      <ion-list-header>Select the event-type you wish to log.</ion-list-header>
-      <ion-item  *ngFor="let module of userInitiatedModules; let i = index;">
-        <button ion-button block large  (click)="startModule(i)">
+
+    <ion-list *ngIf="studyEnded != 'true'">
+      <ion-list-header class ="listHeader">Select the event-type you wish to log.</ion-list-header>
+      <ion-item  no-lines class ="item" *ngFor="let module of userInitiatedModules; let i = index;">
+        <button ion-button block large round (click)="startModule(i)">
            {{ module.name }}
          </button>
          <br>
       </ion-item>
 
     </ion-list>
+
+
+      <ion-list-header class ="listHeader" *ngIf="studyEnded == 'true'">The study has ended. Please complete the final module below.</ion-list-header>
+        <button *ngIf="studyEnded == 'true'" ion-button block large round (click)="finalModule()">
+           Final Module
+         </button>
 
 </ion-content>

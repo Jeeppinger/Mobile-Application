@@ -5,6 +5,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import 'rxjs/add/operator/map';
 import { TabsPage } from '../tabs/tabs';
 import * as localforage from "localforage";
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 /**
  * Generated class for the BaselinePage page.
@@ -25,6 +26,7 @@ export class BaselinePage {
   answers: any = {};
   questionsType: any;
   questionsText: any;
+  questionsName: any;
   moduleType: any;
   qID: any;
   mID: any;
@@ -37,9 +39,12 @@ export class BaselinePage {
   study: any;
   counter: any = 0;
   completedQIDs: any = [];
+  baseExists: any = '';
+
 
   constructor(public afs: AngularFirestore, public navCtrl: NavController,
-    public navParams: NavParams, public storage: Storage) {
+    public navParams: NavParams, public storage: Storage,
+    public splashScreen: SplashScreen) {
       //initial sign in
       this.base = navParams.get('start');
       this.moduleType = navParams.get('type');
@@ -54,6 +59,29 @@ export class BaselinePage {
       }
     }
 
+    public continue(){
+      this.loadBase();
+    }
+
+    public completeLater(){
+      localforage.getItem("base").then(function(value) {
+          // This code runs once the value has been loaded
+          // from the offline store.
+          var temp: any = {};
+          temp = value;
+          if (value == null){
+            alert('failure3');
+          }
+          else {
+            temp.completed = 'no';
+            localforage.setItem("base", temp);
+          }
+      }).catch(function(err) {
+          // This code runs if there were any errors
+          console.log(err);
+      });
+      this.navCtrl.push(TabsPage);
+    }
 
     /*
       This function takes in a questiod ID and displays the correct question
@@ -73,6 +101,7 @@ export class BaselinePage {
             else {
               self.questionsType = storedQuestion.type;
               self.questionsText = storedQuestion.text;
+              self.questionsName = storedQuestion.name;
               self.options = storedQuestion.options;
             }
           }).catch(function(err) {
@@ -85,6 +114,7 @@ export class BaselinePage {
     public startModule(){
       try
       {
+        this.baseExists = 'progress';
         var questionID;
         let self = this;
         var modKey: any;
@@ -129,7 +159,23 @@ export class BaselinePage {
     }
 
     submitModule(){
-      this.answers[this.qID] = this.userInfo.ans;
+      this.answers[this.questionsName] = this.userInfo.ans;
+      localforage.getItem("base").then(function(value) {
+          // This code runs once the value has been loaded
+          // from the offline store.
+          var temp: any = {};
+          temp = value;
+          if (value == null){
+            alert('failure3');
+          }
+          else {
+            temp.completed = 'yes';
+            localforage.setItem("base", temp);
+          }
+      }).catch(function(err) {
+          // This code runs if there were any errors
+          console.log(err);
+      });
 
       var today = new Date();
       var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -158,11 +204,26 @@ export class BaselinePage {
                 // from the offline store.
                 var temp: any = {};
                 temp = value;
-                var firestoreID = temp.modID;
+                var firestoreID = temp.name;
                 if (value == null){
                   alert('failure');
                 }
                 else {
+                  let that = self;
+                  self.afs.firestore.doc('/Answers/'+ val).get().then(function(querySnapshot) {
+                    var tempSnap: any = {};
+                    tempSnap = querySnapshot;
+                    var modIDArray: any = tempSnap.data().moduleIDs;
+                    if (modIDArray == null){
+                      modIDArray = [];
+                    }
+                    if (!modIDArray.includes(firestoreID)){
+                      modIDArray.push(firestoreID);
+                      that.afs.firestore.doc('/Answers/'+ val).set({
+                          moduleIDs: modIDArray
+                      });
+                    }
+                  });
                   self.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
                 }
             }).catch(function(err) {
@@ -181,7 +242,7 @@ export class BaselinePage {
 
     submitQuestion(){
       this.counter++;
-      this.answers[this.qID] = this.userInfo.ans;
+      this.answers[this.questionsName] = this.userInfo.ans;
       this.completedQIDs.push(this.qID);
       var nextQ = this.branching[this.qID];
       if (nextQ[0] == '-1'){
@@ -212,6 +273,30 @@ export class BaselinePage {
       this.resetQuestion(key);
       delete this.answers[key];
       this.counter--;
+    }
+
+    loadBase(){
+      let self = this;
+      //this.splashScreen.show();
+      localforage.getItem("base").then(function(value) {
+            // This code runs once the value has been loaded
+            // from the offline store.
+            var storedQuestion: any = {};
+            storedQuestion = value;
+
+            if (value == null){
+              self.baseExists = 'false';
+            }
+            else {
+              self.baseExists = 'true';
+            }
+            //this.splashScreen.hide();
+          }).catch(function(err) {
+              // This code runs if there were any errors
+              self.baseExists = 'false';
+              this.splashScreen.show();
+              console.log(err);
+          });
     }
 
     ionViewDidLoad() {

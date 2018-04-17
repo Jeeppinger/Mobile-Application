@@ -33,6 +33,7 @@ export class BacklogPage {
   questions: any;
   timeInitiatedModules: any;
   done: any;
+  baseExists: any = '';
 
   constructor(public storage: Storage, private toast: ToastController,
     public alertCtrl: AlertController,
@@ -45,10 +46,21 @@ export class BacklogPage {
   startModule(id){
     //we will need to get the module ID
     let modID = this.timeInitiatedModules[id].id;
-    this.appCtrl.getRootNav().setRoot(ModulePage, {
-      mID: modID,
-      type: 'Time Initiated'
-    });
+    if (this.baseExists == 'yes'){
+      if (id == 0){
+        this.appCtrl.getRootNav().setRoot(ModulePage, {
+          mID: modID,
+          type: 'base',
+          start: 'true'
+        });
+      }
+    }
+    else{
+      this.appCtrl.getRootNav().setRoot(ModulePage, {
+        mID: modID,
+        type: 'Time Initiated'
+      });
+    }
   }
 
   initializeModules(){
@@ -58,7 +70,28 @@ export class BacklogPage {
     let self = this;
     this.timeInitiatedModules = [];
 
-    while (this.done == 'false' && counter < 10){
+    localforage.getItem("base").then(function(value) {
+        // This code runs once the value has been loaded
+        // from the offline store.
+        var temp: any = {};
+        temp = value;
+        if (value == null){
+          //no base
+        }
+        else {
+          if (temp.completed == 'no'){
+              self.timeInitiatedModules.push(value);
+              self.baseExists = 'yes';
+              counter++;
+          }
+        }
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+        //error
+    });
+
+    while (this.done == 'false' && counter < 20){
       key = "TImod" + counter;
       localforage.getItem(key).then(function(value) {
           // This code runs once the value has been loaded
@@ -88,6 +121,9 @@ export class BacklogPage {
     {
       //clear badge because no backlog
       cordova.plugins.notification.badge.clear();
+      cordova.plugins.notification.local.clearAll(function() {
+
+      }, this);
     }
 }
 }

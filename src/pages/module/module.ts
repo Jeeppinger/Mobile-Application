@@ -26,11 +26,13 @@ export class ModulePage {
   answers: any = {};
   questionsType: any;
   questionsText: any;
+  questionsName: any;
   moduleType: any;
   qID: any;
   mID: any;
   mod: any;
   base: any;
+  idToCancel: any;
   options: any;
   counter: any = 0;
   completedQIDs: any = [];
@@ -44,8 +46,11 @@ export class ModulePage {
       if (this.base != 'true'){
         this.mod = navParams.get('mID');
         this.mID = "" + this.mod;
-        this.startModule();
+        if (this.moduleType == 'Time Initiated'){
+          this.idToCancel = navParams.get('idToCancel');
+        }
       }
+      this.startModule();
     }
 
 
@@ -68,6 +73,7 @@ export class ModulePage {
             else {
               self.questionsType = storedQuestion.type;
               self.questionsText = storedQuestion.text;
+              self.questionsName = storedQuestion.name;
               self.options = storedQuestion.options;
             }
           }).catch(function(err) {
@@ -85,6 +91,9 @@ export class ModulePage {
         var modKey: any;
         if (this.moduleType == 'base'){
           modKey = "base";
+        }
+        else if (this.moduleType == 'End Module'){
+          modKey = "end";
         }
         else if (this.moduleType == 'Time Initiated'){
           modKey = this.mID;
@@ -122,7 +131,7 @@ export class ModulePage {
     }
 
     submitModule(){
-      this.answers[this.qID] = this.userInfo.ans;
+      this.answers[this.questionsName] = this.userInfo.ans;
 
       if (this.moduleType == 'Time Initiated'){
         let self = this;
@@ -162,6 +171,22 @@ export class ModulePage {
 
       if (this.moduleType == 'base'){
         modKey = "base";
+        localforage.getItem("base").then(function(value) {
+            // This code runs once the value has been loaded
+            // from the offline store.
+            var temp: any = {};
+            temp = value;
+            if (value == null){
+              alert('failure4');
+            }
+            else {
+              temp.completed = 'yes';
+              localforage.setItem("base", temp);
+            }
+        }).catch(function(err) {
+            // This code runs if there were any errors
+            console.log(err);
+        });
       }
       else if (this.moduleType == 'Time Initiated'){
         modKey = this.mID;
@@ -170,13 +195,21 @@ export class ModulePage {
           // decrease badge
         });
 
+
         //clear notification
-        cordova.plugins.notification.local.clear(1, function() {
-            //alert("done");
+        cordova.plugins.notification.local.clear(this.idToCancel, function() {
+
         });
+
       }
+
       else if (this.moduleType == 'User Initiated'){
         modKey = "UImod" + this.mID;
+      }
+
+      else if (this.moduleType == 'End Module'){
+        modKey = "end";
+        //will need to logout after submission
       }
 
       this.storage.get('user').then((val) => {
@@ -189,11 +222,26 @@ export class ModulePage {
                 // from the offline store.
                 var temp: any = {};
                 temp = value;
-                var firestoreID = temp.modID;
+                var firestoreID = temp.name;
                 if (value == null){
                   alert('failure');
                 }
                 else {
+                  let that = self;
+                  self.afs.firestore.doc('/Answers/'+ val).get().then(function(querySnapshot) {
+                    var tempSnap: any = {};
+                    tempSnap = querySnapshot;
+                    var modIDArray: any = tempSnap.data().moduleIDs;
+                    if (modIDArray == null){
+                      modIDArray = [];
+                    }
+                    if (!modIDArray.includes(firestoreID)){
+                      modIDArray.push(firestoreID);
+                      that.afs.firestore.doc('/Answers/'+ val).set({
+                          moduleIDs: modIDArray
+                      });
+                    }
+                  });
                   self.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
                 }
             }).catch(function(err) {
@@ -212,7 +260,7 @@ export class ModulePage {
 
     submitQuestion(){
       this.counter++;
-      this.answers[this.qID] = this.userInfo.ans;
+      this.answers[this.questionsName] = this.userInfo.ans;
       this.completedQIDs.push(this.qID);
       var nextQ = this.branching[this.qID];
       if (nextQ[0] == '-1'){
@@ -228,7 +276,6 @@ export class ModulePage {
         //branching
         //get index of answer, only possible for radio right now
         var index = this.options.indexOf(this.userInfo.ans);
-        alert("next: " + index);
         this.qID = nextQ[index];
         this.userInfo.ans = "";
         this.resetQuestion(nextQ[index]);

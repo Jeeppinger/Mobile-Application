@@ -9,6 +9,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import 'rxjs/add/operator/map';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AngularFirestoreCollection } from 'angularfire2/firestore';
+
 import * as localforage from "localforage";
 
 declare var cordova;
@@ -34,6 +35,7 @@ export class HomePage {
   questions: any;
   userInitiatedModules: any;
   done: any;
+  studyEnded: any = '';
 
   constructor(public storage: Storage, private toast: ToastController,
     public alertCtrl: AlertController,
@@ -55,11 +57,12 @@ export class HomePage {
   logout(){
     this.storage.remove('user');
     this.storage.remove('study_id');
-
+/*
     cordova.plugins.notification.local.cancelAll(function() {
         console.log('Notifications cancelled. ');
     }, this);
     cordova.plugins.notification.badge.clear();
+*/
     localforage.clear().then(function() {
     // Run this code once the database has been entirely deleted.
     console.log('Database is now empty.');
@@ -70,43 +73,11 @@ export class HomePage {
     this.appCtrl.getRootNav().setRoot(LoginPage);
   }
 
-  scheduleNotification() {
-    cordova.plugins.notification.local.schedule({
-      id: 1,
-      title: 'Attention',
-      text: 'Test Notification',
-      data: { mydata: 'My hidden message' },
-      //firstAt: monday,
-      //every: "minute"
-      at: new Date(new Date().getTime() + 5000)
+  finalModule(){
+    this.appCtrl.getRootNav().setRoot(ModulePage, {
+      mID: "end",
+      type: 'End Module'
     });
-
-  }
-
-  testMod(){
-    var counter = 0;
-    var done = false;
-    var key;
-    let self = this;
-    this.userInitiatedModules = [];
-
-    key = "UImod" + counter;
-    localforage.getItem(key).then(function(value) {
-          // This code runs once the value has been loaded
-          // from the offline store.
-          if (value == null){
-            done = true;
-            alert("failed");
-          }
-          else {
-            self.userInitiatedModules.push(value);
-          }
-        }).catch(function(err) {
-            // This code runs if there were any errors
-            done = true;
-            //console.log(err);
-        });
-
   }
 
   initializeModules(){
@@ -115,6 +86,29 @@ export class HomePage {
     var key;
     let self = this;
     this.userInitiatedModules = [];
+
+    //see if end date of study is reached
+    localforage.getItem("end_date").then(function(value) {
+        // This code runs once the value has been loaded
+        // from the offline store.
+        if (value == null){
+          // no end date
+        }
+        else {
+          var date:any = value;
+          var today = new Date();
+          var end:any = new Date(date);
+          end.setDate(end.getDate()+1);
+          if (today.getTime() > end.getTime())
+          {
+              self.done = 'true';
+              self.studyEnded = 'true';
+          }
+        }
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+    });
 
     while (this.done == 'false' && counter < 10){
       key = "UImod" + counter;
@@ -188,6 +182,7 @@ export class HomePage {
         }
         //this.splashScreen.hide();
       });
+
     }
     catch(e){
       console.error(e);

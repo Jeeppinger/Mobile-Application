@@ -30,6 +30,6 @@
 
   <button ion-button (click)="authenticateUser()" *ngIf="authenticated != 'true'">Login</button>
 
-  <button *ngIf="authenticated == 'true' && sleep_start != '' && sleep_end != ''" ion-button (click)="login()">Continue</button>
+  <button *ngIf="authenticated == 'true' && sleep_start != '' && sleep_end != ''" ion-button (click)="showConfirm()">Continue</button>
 
 </ion-content>

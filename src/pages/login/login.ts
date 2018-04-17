@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -39,12 +40,35 @@ export class LoginPage {
   authenticated: any = '';
   sleep_start: any;
   sleep_end: any;
+  studyEndDate: any;
+  notificationID: any = 0;
 
   constructor(public afAuth: AngularFireAuth, public afs: AngularFirestore,
     public navCtrl: NavController, public navParams: NavParams,
     public storage: Storage, public splashScreen: SplashScreen,
-    public appCtrl: App) {
+    public appCtrl: App, public alertCtrl: AlertController) {
       splashScreen.show();
+  }
+
+  showConfirm() {
+  let confirm = this.alertCtrl.create({
+    title: 'Confirmation',
+    message: 'To confirm, you sleep from ' + this.sleep_start + ' to ' + this.sleep_end + "?",
+    buttons: [
+      {
+        text: 'No',
+        handler: () => {
+        }
+      },
+      {
+        text: 'Yes',
+        handler: () => {
+          this.login();
+        }
+      }
+    ]
+  });
+  confirm.present();
   }
 
   authenticateUser(){
@@ -100,6 +124,7 @@ export class LoginPage {
 
     try
     {
+      let self = this;
       studyID = this.afs.firestore.doc('/Participants/'+this.user).get()
         .then(docSnapshot => {
           if (docSnapshot.exists) {
@@ -107,7 +132,7 @@ export class LoginPage {
             this.storage.set('user', this.user);
             studyID = docSnapshot.data().study_id;
             this.storage.set('study_id', studyID);
-            cordova.plugins.notification.badge.set(0);
+            //cordova.plugins.notification.badge.set(0);
             this.appCtrl.getRootNav().setRoot(BaselinePage, {
               start: 'true',
               type: 'base',
@@ -121,7 +146,6 @@ export class LoginPage {
             return;
           }
         });
-        let self = this;
 
         studyID.then(function(id) {
           self.getModules(id);
@@ -137,6 +161,27 @@ export class LoginPage {
     var counter = 0;
     var arrayOfModuleIDs;
     let self = this;
+
+    //get the study end date
+    this.afs.firestore.doc('/Studies/'+ id).get().then(function(querySnapshot) {
+      var date = querySnapshot.data().end_date;
+      //set end date to the morning of study end date
+      var end_date = new Date(date);
+
+      var wake_up = "" + self.sleep_end;
+      wake_up = wake_up.substring(0,2);
+
+      var wake = +wake_up;
+
+      end_date.setHours(wake);
+      end_date.setMinutes(0);
+      end_date.setSeconds(0);
+
+      self.studyEndDate = end_date;
+
+      localforage.setItem("end_date", end_date);
+    });
+
     //get all documents in a collection
     arrayOfModuleIDs = this.afs.firestore.doc('/Studies/'+ id).collection("modules").get().then(function(querySnapshot) {
     querySnapshot.forEach(function(doc) {
@@ -181,20 +226,22 @@ export class LoginPage {
           questions = self.afs.firestore.doc('/Modules/'+ ModID).collection("Questions").get().then(function(querySnapshot) {
             var questionsArray = [];
             let that = self;
+
             //iterate through each question in the module
             querySnapshot.forEach(function(doc) {
-                if (!that.allQuestions.includes(doc.id)){
-                  that.allQuestions.push(doc.id);
-                  that.storeQuestions(doc.id);
+              var outerQid = doc.data().id;
+                if (!that.allQuestions.includes(outerQid)){
+                  that.allQuestions.push(outerQid);
+                  that.storeQuestions(outerQid);
                 }
-                questionsArray.push(doc.id);
+                questionsArray.push(outerQid);
                 //each question has it's own set (array) of branching logic
                 var branch = doc.data().branch;
                 branchArray = [];
                 branch.forEach(function (id) {
                   branchArray.push(id);
                 });
-                var index = "" + doc.id;
+                var index = "" + outerQid;
                 branches[index] = branchArray;
             });
             return questionsArray;
@@ -229,18 +276,19 @@ export class LoginPage {
             let that = self;
             //iterate through each question in the module
             querySnapshot.forEach(function(doc) {
-                if (!that.allQuestions.includes(doc.id)){
-                  that.allQuestions.push(doc.id);
-                  that.storeQuestions(doc.id);
+              var outerQid = doc.data().id;
+                if (!that.allQuestions.includes(outerQid)){
+                  that.allQuestions.push(outerQid);
+                  that.storeQuestions(outerQid);
                 }
-                questionsArray.push(doc.id);
+                questionsArray.push(outerQid);
                 //each question has it's own set (array) of branching logic
                 var branch = doc.data().branch;
                 branchArray = [];
                 branch.forEach(function (id) {
                   branchArray.push(id);
                 });
-                var index = "" + doc.id;
+                var index = "" + outerQid;
                 branches[index] = branchArray;
             });
             return questionsArray;
@@ -280,18 +328,19 @@ export class LoginPage {
             let that = self;
             //iterate through each question in the module
             querySnapshot.forEach(function(doc) {
-                if (!that.allQuestions.includes(doc.id)){
-                  that.allQuestions.push(doc.id);
-                  that.storeQuestions(doc.id);
+              var outerQid = doc.data().id;
+                if (!that.allQuestions.includes(outerQid)){
+                  that.allQuestions.push(outerQid);
+                  that.storeQuestions(outerQid);
                 }
-                questionsArray.push(doc.id);
+                questionsArray.push(outerQid);
                 //each question has it's own set (array) of branching logic
                 var branch = doc.data().branch;
                 branchArray = [];
                 branch.forEach(function (id) {
                   branchArray.push(id);
                 });
-                var index = "" + doc.id;
+                var index = "" + outerQid;
                 branches[index] = branchArray;
             });
             return questionsArray;
@@ -303,7 +352,8 @@ export class LoginPage {
               questionIDs: id,
               branching: branches,
               name: modName,
-              modID: ModID
+              modID: ModID,
+              completed: 'no'
           };
           localforage.setItem("base", base).then(function (value) {
           // Do other things once the value has been saved.
@@ -313,6 +363,52 @@ export class LoginPage {
               // This code runs if there were any errors
               console.log(err);
           });
+        });
+        }
+
+        else if (modType == "End Module")
+        {
+          questions = self.afs.firestore.doc('/Modules/'+ ModID).collection("Questions").get().then(function(querySnapshot) {
+            var questionsArray = [];
+            let that = self;
+            //iterate through each question in the module
+            querySnapshot.forEach(function(doc) {
+              var outerQid = doc.data().id;
+                if (!that.allQuestions.includes(outerQid)){
+                  that.allQuestions.push(outerQid);
+                  that.storeQuestions(outerQid);
+                }
+                questionsArray.push(outerQid);
+                //each question has it's own set (array) of branching logic
+                var branch = doc.data().branch;
+                branchArray = [];
+                branch.forEach(function (id) {
+                  branchArray.push(id);
+                });
+                var index = "" + outerQid;
+                branches[index] = branchArray;
+            });
+            return questionsArray;
+        });
+        questions.then(function(id) {
+          var end = {
+              id: 1, //for testing
+              type: modType,
+              questionIDs: id,
+              branching: branches,
+              name: modName,
+              modID: ModID,
+              triggered: 'no'
+          };
+          localforage.setItem("end", end).then(function (value) {
+          // Do other things once the value has been saved.
+          console.log(value);
+          //self.doSomethingElse();
+          }).catch(function(err) {
+              // This code runs if there were any errors
+              console.log(err);
+          });
+          self.scheduleModule("end", 1);
         });
         }
         var branches = {};
@@ -343,53 +439,67 @@ export class LoginPage {
       var currentHour = start;
       var currentMinutes = 0;
 
-      if (start < end){
-        while(currentHour < end)
-        {
-          notif = {
-            id: id + count++,
-            title: 'Attention',
-            text: 'Test Notification',
-            data: { notiID: id},
-            every: { hour: currentHour, minute: currentMinutes },
-            };
-            notifications.push(notif);
-            //alert("notification created for " + id + " at " + currentHour + ":" + currentMinutes);
-            nextOccurence = new Date(nextOccurence.getTime() + interval);
-            currentHour = nextOccurence.getHours();
-            currentMinutes = nextOccurence.getMinutes();
-        }
+      if (id == "end"){
+        var end_date: any= new Date(this.studyEndDate);
+        notif = {
+          id: this.notificationID++,
+          title: 'Study Ended',
+          text: 'The study has ended. Please complete the final module',
+          data: { notiID: id, type: "end"},
+          at: end_date
+        };
+        notifications.push(notif);
       }
 
       else{
-        var currentTime = new Date();
-        currentTime.setHours(start);
-        currentTime.setMinutes(0);
-        currentTime.setSeconds(0);
+        if (start < end){
+          while(currentHour < end)
+          {
+            notif = {
+              id: this.notificationID++,
+              title: 'Please complete Questionnaire',
+              text: 'You have a Time Initiated Module that needs to be completed',
+              data: { notiID: id, type: "Time Initiated"},
+              every: { hour: currentHour, minute: currentMinutes },
+              };
+              count++;
+              notifications.push(notif);
+              //alert("notification created for " + id + " at " + currentHour + ":" + currentMinutes);
+              nextOccurence = new Date(nextOccurence.getTime() + interval);
+              currentHour = nextOccurence.getHours();
+              currentMinutes = nextOccurence.getMinutes();
+          }
+        }
 
-        var secondTime = new Date();
-        secondTime.setHours(end);
-        secondTime.setMinutes(0);
-        secondTime.setSeconds(0);
-        secondTime = new Date(secondTime.getTime() + (1000 * 60 * 60 * 24));
+        else{
+          var currentTime = new Date();
+          currentTime.setHours(start);
+          currentTime.setMinutes(0);
+          currentTime.setSeconds(0);
 
-        while(currentTime.getTime() < secondTime.getTime())
-        {
-          notif = {
-            id: id + count++,
-            title: 'Attention',
-            text: 'Test Notification',
-            data: { notiID: id},
-            every: { hour: currentHour, minute: currentMinutes },
-          };
-          notifications.push(notif);
-          //alert("notification created for " + id + " at " + currentHour + ":" + currentMinutes);
-          currentTime = new Date(currentTime.getTime() + interval);
-          currentHour = currentTime.getHours();
-          currentMinutes = currentTime.getMinutes();
+          var secondTime = new Date();
+          secondTime.setHours(end);
+          secondTime.setMinutes(0);
+          secondTime.setSeconds(0);
+          secondTime = new Date(secondTime.getTime() + (1000 * 60 * 60 * 24));
+
+          while(currentTime.getTime() < secondTime.getTime())
+          {
+            notif = {
+              id: this.notificationID++,
+              title: 'Please complete Questionnaire',
+              text: 'You have a Time Initiated Module that needs to be completed',
+              data: { notiID: id, type: "Time Initiated"},
+              every: { hour: currentHour, minute: currentMinutes },
+            };
+            notifications.push(notif);
+            currentTime = new Date(currentTime.getTime() + interval);
+            currentHour = currentTime.getHours();
+            currentMinutes = currentTime.getMinutes();
+          }
         }
       }
-      cordova.plugins.notification.local.schedule(notifications);
+      //cordova.plugins.notification.local.schedule(notifications);
 
   }
 
