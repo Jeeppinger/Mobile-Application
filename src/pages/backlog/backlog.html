@@ -1,16 +1,16 @@
 <ion-header>
-  <ion-navbar color="primary">
+  <ion-navbar color="transparent">
     <ion-title>
-      Backlog
+      Modules TO-DO
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content class = "backlog">
 
-<button ion-button full (click)="initializeModules()">Refresh Backlog</button>
+<button ion-button full (click)="initializeModules()">Refresh TO-DO List</button>
     <ion-list>
-      <ion-list-header>Backlog of Time-Based Modules:</ion-list-header>
+      <ion-list-header class ="listHeader">Modules to Complete:</ion-list-header>
       <ion-item  *ngFor="let module of timeInitiatedModules; let i = index;">
         <button ion-button block large round (click)="startModule(i)">
            {{ module.name }}

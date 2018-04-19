@@ -1,38 +1,36 @@
-<ion-content class = "module">
-  <ion-item  *ngIf="baseExists == ''">
-    <h2>You have sucessfully registered for study {{study}}.</h2>
-  </ion-item>
+<ion-content>
+  <div class = "module">
+  <div class = "center">
+    <p class = "header1" *ngIf="baseExists == ''">Welcome! You have sucessfully registered for study {{study}}.</p>
 
 
-    <h3 *ngIf="baseExists == 'true'">The baseline module will take about an hour to complete.</h3>
+
+    <p class = "header1" *ngIf="baseExists == 'true'">The baseline module will take about an hour to complete.</p>
     <button *ngIf="baseExists == 'true'" ion-button (click)="completeLater()">Complete Later</button>
     <button *ngIf="baseExists == 'true'" ion-button (click)="startModule()">Complete Now</button>
 
 
   <button *ngIf="baseExists == ''" ion-button (click)="continue()">Continue</button>
 
-
-  <ion-item  *ngIf="questionsType != 'Invalid' && questionsType != 'End of Module'">
-    <h1>
+  </div>
+    <p class = "header1" *ngIf="questionsType != 'Invalid' && questionsType != 'End of Module'">
     {{ questionsText }}
-  </h1>
-  </ion-item>
+  </p>
 
-  <ion-item  *ngIf="questionsType == 'End of Module'">
-      <h1>End of Baseline Module</h1>
-  </ion-item>
+    <p class = "header1" *ngIf="questionsType == 'End of Module'">End of Baseline Module</p>
 
 
 
   <ion-list *ngIf="questionsType == 'radio'" radio-group [(ngModel)]="userInfo.ans">
     <ion-item *ngFor="let option of options; let i = index;">
-      <ion-label>{{option}}</ion-label>
+      <ion-label class = "radio">{{option}}</ion-label>
       <ion-radio value={{option}} checked></ion-radio>
     </ion-item>
   </ion-list>
 
   <ion-item *ngIf="questionsType == 'text'">
-    <ion-input placeholder="Tap to Type" type="text" [(ngModel)]="userInfo.ans"></ion-input>
+    <ion-label style="font-size:20px" color = "white" floating>Answer:</ion-label>
+    <ion-input type="text" [(ngModel)]="userInfo.ans"></ion-input>
   </ion-item>
 
 
@@ -44,18 +42,20 @@
   </ion-item>
 
 <ion-item *ngIf="questionsType == 'multi'">
-  <ion-select [(ngModel)]="userInfo.ans" multiple="true" placeholder="Click to Select">
+  <ion-label style="font-size:20px" color = "white" floating>Select:</ion-label>
+  <ion-select [(ngModel)]="userInfo.ans" multiple="true">
     <ion-option *ngFor="let option of options; let i = index;" value={{i}}>{{option}}</ion-option>
   </ion-select>
 </ion-item>
 
   <ion-item *ngIf="questionsType == 'time'">
-    <ion-datetime displayFormat="hh:mm a" placeholder = "Tap Here to Select Time" [(ngModel)]="userInfo.ans"></ion-datetime>
+    <ion-label style="font-size:20px" color = "white" floating>Select Time:</ion-label>
+    <ion-datetime displayFormat="hh:mm a" [(ngModel)]="userInfo.ans"></ion-datetime>
   </ion-item>
 
 
 <button ion-button (click)="prevQuestion()" *ngIf="counter > 0">Previous</button>
 <button ion-button (click)="submitQuestion()" *ngIf="questionsType != 'End of Module' && userInfo.ans != ''">Next</button>
 <button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module'">Submit Module</button>
-
+</div>
 </ion-content>

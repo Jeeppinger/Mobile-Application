@@ -1,12 +1,8 @@
-.home{
+ion-content {
     background-image: url('../assets/imgs/background4.jpg');
     background-size: 100% 100%;
 }
 
-.backlog {
-    background-image: url('../assets/imgs/background4.jpg');
-    background-size: 100% 100%;
-}
 .listHeader{
   color: white;
   background: transparent;
@@ -14,10 +10,12 @@
   border-left: 0px;
   border-right: 0px;
   border-bottom: 0px;
+  font-size: 15px;
 }
 
 .item{
   background: transparent;
+  word-wrap: break-word !important;
   border-top: 0px;
   border-left: 0px;
   border-right: 0px;
@@ -25,7 +23,55 @@
 }
 
 .module{
-    position: absolute;
-    top: 35%;
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-top: 80px;
     font-family: Gill Sans, Verdana;
+    background-color: rgba(255, 255, 255,0.2);
+    padding: 8px;
+}
+
+.module button{
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.soon{
+  color: white;
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-top: 80px;
+  font-size: 25px;
+  text-align: center;
+}
+
+.header1{
+    word-wrap: break-word !important;
+    font-size:28px !important;
+}
+
+.mainHome button, .backlog button {
+  background: rgba(128, 170, 255, 0.4) !important;
+
+}
+
+.center{
+  text-align: center;
+}
+
+.radio{
+  font-size:20px !important;
+}
+.tabs {
+	a.tab-button[aria-selected=true] {
+
+    background-color: #63676d;
+		.tab-button-icon {
+      color: #59c2ff;
+		}
+	}
+}
+
+
+ion-datetime, ion-input {
+  font-size: 20px;
 }

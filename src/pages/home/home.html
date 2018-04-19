@@ -1,6 +1,6 @@
 <ion-header>
-  <ion-navbar color="primary">
-  <ion-toolbar color="primary">
+  <ion-navbar color="transparent">
+  <ion-toolbar>
 
   <ion-title align = "center">Home</ion-title>
 
@@ -28,11 +28,11 @@
 </ion-fab-list>
 </ion-fab>
 
-
+<div class = "mainHome">
 <button ion-button full (click)="logout()">Logout</button>
 
     <ion-list *ngIf="studyEnded != 'true'">
-      <ion-list-header class ="listHeader">Select the event-type you wish to log.</ion-list-header>
+      <ion-list-header class ="listHeader">Select the event-type you wish to log:</ion-list-header>
       <ion-item  no-lines class ="item" *ngFor="let module of userInitiatedModules; let i = index;">
         <button ion-button block large round (click)="startModule(i)">
            {{ module.name }}
@@ -47,5 +47,5 @@
         <button *ngIf="studyEnded == 'true'" ion-button block large round (click)="finalModule()">
            Final Module
          </button>
-
+</div>
 </ion-content>

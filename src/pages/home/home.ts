@@ -137,7 +137,7 @@ export class HomePage {
         if (val)
         {
           this.toast.create({
-            message: `Welcome to SCHEMA, ${val}`,
+            message: `Welcome!`,
             duration: 2000
           }).present();
 

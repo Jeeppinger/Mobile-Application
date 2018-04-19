@@ -38,9 +38,12 @@ $colors: (
   secondary:  #32db64,
   danger:     #f53d3d,
   light:      #f4f4f4,
-  dark:       #222
+  dark:       #222,
+  gray:       #a7c2f9,
+  transparent: rgba(128, 170, 255, 0.4),
+  white: rgb(255, 255, 255),
+  black:      #3c3f44
 );
-
 
 
 // App iOS Variables

@@ -1,7 +1,7 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="transparent">
     <ion-title>
-      About
+      Connect
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -11,86 +11,5 @@
 
 
 <ion-content>
-  <ion-list>
-      <ion-menu side="left" [content]="mycontent"></ion-menu>
-      <br>
-      <form [formGroup]="authForm" (ngSubmit)="logForm()">
-
-      <h5 padding>Question 1</h5>
-
-      <ion-item>
-        <ion-label>What sex are you?</ion-label>
-        <ion-select formControlName="usersex">
-          <ion-option value="f">Female</ion-option>
-          <ion-option value="m">Male</ion-option>
-        </ion-select>
-      </ion-item>
-
-      <h5 padding>Question 2</h5>
-
-      <ion-item>
-        <ion-label>What emotion(s) are you feeling? </ion-label>
-        <ion-select formControlName="emotions" multiple="true">
-          <ion-option value = "Happy">Happy</ion-option>
-          <ion-option value = "Excited">Excited</ion-option>
-          <ion-option value = "Nervous">Nervous</ion-option>
-          <ion-option value = "Stressed">Stressed</ion-option>
-          <ion-option value = "Motivated">Motivated</ion-option>
-        </ion-select>
-      </ion-item>
-
-      <h5 padding>Question 3</h5>
-
-      <ion-item>
-        <ion-label>Have you eaten a meal recently?</ion-label>
-        <ion-toggle formControlName="eattoggle"></ion-toggle>
-      </ion-item>
-      <h5 padding>Question 4</h5>
-      <ion-item>
-        <ion-label>What time did you begin eating?</ion-label>
-        <ion-datetime displayFormat="hh:mm a" formControlName="eattime"></ion-datetime>
-      </ion-item>
-
-      <h5 padding>Question 5</h5>
-
-      <ion-item>
-        <ion-label>Did you eat an excessive amount?</ion-label>
-        <ion-toggle formControlName="excesstoggle"></ion-toggle>
-      </ion-item>
-
-      <ion-list radio-group formControlName="radio1">
-        <ion-item>
-          <ion-label>Yes</ion-label>
-          <ion-radio value="yes"></ion-radio>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>No</ion-label>     <!-- -->
-          <ion-radio value="no" checked="true"></ion-radio>  <!-- adding 'value = "negval" makes it storable data'-->
-        </ion-item>
-      </ion-list>
-
-      <h5 padding>Question 6</h5>
-      <p>Please move the slider to select your current mood.</p>
-
-      <ion-item>
-        <ion-range formControlName="slider1" min="0" max="100">
-          <ion-icon range-left large name="sad"></ion-icon>
-          <ion-icon range-right large name="happy"></ion-icon>
-        </ion-range>
-      </ion-item>
-
-      <ion-item>
-        <ion-range min="0" max="5" step="1" snaps="true" formControlName="slider2" color="secondary">
-          <ion-label range-left>0</ion-label>
-          <ion-label range-right>5</ion-label>
-        </ion-range>
-      </ion-item>
-
-      <ion-item>
-        <button ion-button large full type="submit" [disabled]="!authForm.valid">Submit</button>
-      </ion-item>
-
-    </form>
-  </ion-list>
+<p class="soon">SOON TO COME</p>
 </ion-content>
