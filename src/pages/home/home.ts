@@ -139,7 +139,7 @@ export class HomePage {
 
           let toast = this.toast.create({
             message: `Welcome! \nYá'át'ééh!`,
-            duration: 2000,
+            duration: 3500,
             position: 'top'
           });
           toast.present();

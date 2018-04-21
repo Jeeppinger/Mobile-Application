@@ -21,15 +21,16 @@
   </ion-item>
 
   <ion-item  *ngIf="authenticated == 'true'">
-    <ion-label style="font-size:20px" color = "white" floating>When do you usually go to sleep?</ion-label>
+    <ion-label text-wrap style="font-size:16px" color = "white" floating>When do you usually go to sleep?</ion-label>
       <ion-datetime style="font-size:16px; font-weight:bold;" class="text-input" displayFormat="hh a" [(ngModel)]="sleep_start"></ion-datetime>
   </ion-item>
 
   <ion-item  *ngIf="authenticated == 'true'">
-    <ion-label style="font-size:20px" color = "white" floating>What time do you usually wake up?</ion-label>
+    <ion-label text-wrap style="font-size:16px" color = "white" floating>What time do you usually wake up?</ion-label>
       <ion-datetime style="font-size:16px; font-weight:bold;" class="text-input" displayFormat="hh a" [(ngModel)]="sleep_end"></ion-datetime>
   </ion-item>
-
+<br>
+<br>
   <button ion-button (click)="authenticateUser()" *ngIf="authenticated != 'true'">Login</button>
 
   <button *ngIf="sleep_start != '' && sleep_end != ''" ion-button (click)="showConfirm()">Continue</button>
