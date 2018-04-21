@@ -1,3 +1,9 @@
+<div class="modulePages"></div>
+<ion-fab top right>
+<button *ngIf="baseExists == 'progress'" ion-fab color="light" large (click)="exitModule()"><ion-icon name="close"></ion-icon></button>
+
+</ion-fab>
+
 <ion-content>
   <div class = "module">
   <div class = "center">
@@ -8,6 +14,7 @@
     <p class = "header1" *ngIf="baseExists == 'true'">The baseline module will take about an hour to complete.</p>
     <button *ngIf="baseExists == 'true'" ion-button (click)="completeLater()">Complete Later</button>
     <button *ngIf="baseExists == 'true'" ion-button (click)="startModule()">Complete Now</button>
+    <button *ngIf="baseExists == 'false'" ion-button (click)="goToHome()">Continue to Home Page</button>
 
 
   <button *ngIf="baseExists == ''" ion-button (click)="continue()">Continue</button>
@@ -24,38 +31,43 @@
   <ion-list *ngIf="questionsType == 'radio'" radio-group [(ngModel)]="userInfo.ans">
     <ion-item *ngFor="let option of options; let i = index;">
       <ion-label class = "radio">{{option}}</ion-label>
-      <ion-radio value={{option}} checked></ion-radio>
+      <ion-radio color="green" value={{option}} checked></ion-radio>
     </ion-item>
   </ion-list>
 
   <ion-item *ngIf="questionsType == 'text'">
     <ion-label style="font-size:20px" color = "white" floating>Answer:</ion-label>
-    <ion-input type="text" [(ngModel)]="userInfo.ans"></ion-input>
+    <ion-input style="font-size:16px; font-weight:bold;" color = "white" type="text" [(ngModel)]="userInfo.ans"></ion-input>
   </ion-item>
 
 
   <ion-item *ngIf="questionsType == 'slider'">
       <ion-range [(ngModel)]="userInfo.ans" min="0" max="100">
-        <ion-icon range-left large name="sad"></ion-icon>
-        <ion-icon range-right large name="happy"></ion-icon>
+        <ion-label color = "white" style="font-size:16px" range-left>0</ion-label>
+        <ion-label color = "white" style="font-size:16px" range-right>100</ion-label>
       </ion-range>
   </ion-item>
 
-<ion-item *ngIf="questionsType == 'multi'">
-  <ion-label style="font-size:20px" color = "white" floating>Select:</ion-label>
-  <ion-select [(ngModel)]="userInfo.ans" multiple="true">
-    <ion-option *ngFor="let option of options; let i = index;" value={{i}}>{{option}}</ion-option>
-  </ion-select>
-</ion-item>
-
-  <ion-item *ngIf="questionsType == 'time'">
-    <ion-label style="font-size:20px" color = "white" floating>Select Time:</ion-label>
-    <ion-datetime displayFormat="hh:mm a" [(ngModel)]="userInfo.ans"></ion-datetime>
+  <ion-item *ngIf="questionsType == 'multi'">
+    <ion-label style="font-size:20px" color = "white" floating>&#x25BE; Select:</ion-label>
+    <ion-select style="font-size:16px; font-weight:bold; color:white !important;" [(ngModel)]="userInfo.ans" multiple="true">
+      <ion-option style="font-size:16px; font-weight:bold; color:white !important;"  *ngFor="let option of options; let i = index;" value={{i}}>{{option}}</ion-option>
+    </ion-select>
   </ion-item>
 
+  <ion-item *ngIf="questionsType == 'time'">
+    <ion-label style="font-size:20px" color = "white" floating>&#x25BE; Select Time:</ion-label>
+    <ion-datetime style="font-size:16px; font-weight:bold;" color = "white" displayFormat="hh:mm a" [(ngModel)]="userInfo.ans"></ion-datetime>
+  </ion-item>
 
-<button ion-button (click)="prevQuestion()" *ngIf="counter > 0">Previous</button>
-<button ion-button (click)="submitQuestion()" *ngIf="questionsType != 'End of Module' && userInfo.ans != ''">Next</button>
+  <br>
+  <br>
+  <button ion-button (click)="prevQuestion()" *ngIf="counter > 0"icon-start>
+    <ion-icon name='arrow-back'></ion-icon> Previous</button>
+  <button ion-button (click)="submitQuestion()" *ngIf="questionsType != 'End of Module' && questionsType != 'slider' && userInfo.ans != ''"icon-end>
+    Next <ion-icon name='arrow-forward'></ion-icon></button>
+<button ion-button (click)="submitQuestion()" *ngIf="questionsType == 'slider'"icon-end>
+    Next <ion-icon name='arrow-forward'></ion-icon></button>
 <button ion-button (click)="submitModule()" *ngIf="questionsType == 'End of Module'">Submit Module</button>
 </div>
 </ion-content>

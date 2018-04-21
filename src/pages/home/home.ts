@@ -136,10 +136,13 @@ export class HomePage {
       this.storage.get('user').then((val) => {
         if (val)
         {
-          this.toast.create({
-            message: `Welcome!`,
-            duration: 2000
-          }).present();
+
+          let toast = this.toast.create({
+            message: `Welcome! \nYá'át'ééh!`,
+            duration: 2000,
+            position: 'top'
+          });
+          toast.present();
 
           //get a specific document within a collection
           this.participantsCollectionRef = this.afs.firestore.doc('/Participants/'+val).get()

@@ -4,6 +4,7 @@ import { Storage } from '@ionic/storage';
 import { AngularFirestore } from 'angularfire2/firestore';
 import 'rxjs/add/operator/map';
 import { TabsPage } from '../tabs/tabs';
+import { AlertController } from 'ionic-angular';
 
 import * as localforage from "localforage";
 declare var cordova;
@@ -38,7 +39,8 @@ export class ModulePage {
   completedQIDs: any = [];
 
   constructor(public afs: AngularFirestore, public navCtrl: NavController,
-    public navParams: NavParams, public storage: Storage) {
+    public navParams: NavParams, public storage: Storage,
+    public alertCtrl: AlertController) {
       //initial sign in
       this.base = navParams.get('start');
       this.moduleType = navParams.get('type');
@@ -53,7 +55,26 @@ export class ModulePage {
       this.startModule();
     }
 
-
+    public exitModule(){
+      let confirm = this.alertCtrl.create({
+        title: 'Exit Module',
+        message: 'All answers given in the current module will be lost if you choose to exit.',
+        buttons: [
+          {
+            text: 'Cancel',
+            handler: () => {
+            }
+          },
+          {
+            text: 'Exit Module',
+            handler: () => {
+              this.navCtrl.push(TabsPage);
+            }
+          }
+        ]
+      });
+      confirm.present();
+    }
 
     /*
       This function takes in a questiod ID and displays the correct question
@@ -75,6 +96,9 @@ export class ModulePage {
               self.questionsText = storedQuestion.text;
               self.questionsName = storedQuestion.name;
               self.options = storedQuestion.options;
+              if (self.questionsType== 'slider'){
+                self.userInfo.ans = 50;
+              }
             }
           }).catch(function(err) {
               // This code runs if there were any errors
@@ -229,20 +253,33 @@ export class ModulePage {
                 else {
                   let that = self;
                   self.afs.firestore.doc('/Answers/'+ val).get().then(function(querySnapshot) {
-                    var tempSnap: any = {};
-                    tempSnap = querySnapshot;
-                    var modIDArray: any = tempSnap.data().moduleIDs;
-                    if (modIDArray == null){
+                    if (!querySnapshot.exists)
+                    {
                       modIDArray = [];
-                    }
-                    if (!modIDArray.includes(firestoreID)){
                       modIDArray.push(firestoreID);
                       that.afs.firestore.doc('/Answers/'+ val).set({
                           moduleIDs: modIDArray
                       });
+                      that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
                     }
+                    else
+                    {
+                      var tempSnap: any = {};
+                      tempSnap = querySnapshot;
+                      var modIDArray: any = tempSnap.data().moduleIDs;
+                      if (modIDArray == null){
+                        modIDArray = [];
+                      }
+                      if (!modIDArray.includes(firestoreID)){
+                        modIDArray.push(firestoreID);
+                        that.afs.firestore.doc('/Answers/'+ val).set({
+                            moduleIDs: modIDArray
+                        });
+                      }
+                      that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
+                    }
+
                   });
-                  self.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
                 }
             }).catch(function(err) {
                 // This code runs if there were any errors
@@ -276,9 +313,15 @@ export class ModulePage {
         //branching
         //get index of answer, only possible for radio right now
         var index = this.options.indexOf(this.userInfo.ans);
-        this.qID = nextQ[index];
-        this.userInfo.ans = "";
-        this.resetQuestion(nextQ[index]);
+        if (nextQ[index] == '-1'){
+          this.questionsType = "End of Module";
+        }
+        else{
+          this.qID = nextQ[index];
+          this.userInfo.ans = "";
+          this.resetQuestion(nextQ[index]);
+        }
+
       }
 
     }

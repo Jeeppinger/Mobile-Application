@@ -1,6 +1,24 @@
-ion-content {
+.tabPages, .backlog {
     background-image: url('../assets/imgs/background4.jpg');
     background-size: 100% 100%;
+}
+
+.modulePages {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1;
+
+  display: block;
+  background-image: url('../assets/imgs/background4.jpg');
+  width: 1200px;
+  height: 800px;
+background-size: 100% 100%;
+  -webkit-filter: blur(10px);
+  -moz-filter: blur(10px);
+  -o-filter: blur(10px);
+  -ms-filter: blur(10px);
+  filter: blur(10px);
 }
 
 .listHeader{
@@ -27,7 +45,7 @@ ion-content {
   margin-left: 10px;
   margin-top: 80px;
     font-family: Gill Sans, Verdana;
-    background-color: rgba(255, 255, 255,0.2);
+    background-color: rgba(0, 0, 0,0.4);
     padding: 8px;
 }
 
@@ -46,7 +64,8 @@ ion-content {
 
 .header1{
     word-wrap: break-word !important;
-    font-size:28px !important;
+    font-size:20px !important;
+    color: white;
 }
 
 .mainHome button, .backlog button {
@@ -59,8 +78,11 @@ ion-content {
 }
 
 .radio{
-  font-size:20px !important;
+  font-size:16px !important;
+  color: white;
 }
+
+
 .tabs {
 	a.tab-button[aria-selected=true] {
 
@@ -73,5 +95,21 @@ ion-content {
 
 
 ion-datetime, ion-input {
-  font-size: 20px;
+  font-size: 16px;
+  color: white;
+}
+
+.toast-message{
+  white-space: pre;
+  text-align: center;
+  background: transparent;
+  color: white;
+}
+
+ion-tab{
+  flex-flow: column;
+}
+
+.exitModule{
+  margin-top: 20px;
 }

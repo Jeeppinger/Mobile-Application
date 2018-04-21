@@ -38,8 +38,8 @@ export class LoginPage {
   baseModuletoReturn: any = {};
   allQuestions: any = [];
   authenticated: any = '';
-  sleep_start: any;
-  sleep_end: any;
+  sleep_start: any = '';
+  sleep_end: any = '';
   studyEndDate: any;
   notificationID: any = 0;
 
