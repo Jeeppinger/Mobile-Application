@@ -22,7 +22,7 @@
 <button ion-fab color="light" large><ion-icon name="settings"></ion-icon></button>
 <ion-fab-list>
 
-    <button ion-fab><ion-icon name="information-circle"></ion-icon></button>
+    <button (click)="goToAbout()" ion-fab><ion-icon name="information-circle"></ion-icon></button>
 
 </ion-fab-list>
 </ion-fab>
@@ -42,9 +42,14 @@
     </ion-list>
 
 
-      <ion-list-header class ="listHeader" *ngIf="studyEnded == 'true'">The study has ended. Please complete the final module below.</ion-list-header>
-        <button *ngIf="studyEnded == 'true'" ion-button block large round (click)="finalModule()">
+      <ion-list-header text-wrap class ="listHeader" *ngIf="studyEnded == 'true' && endModuleExists == 'true'">The study has ended. Please complete the final module below.</ion-list-header>
+        <button *ngIf="studyEnded == 'true' && endModuleExists == 'true'" ion-button block large round (click)="finalModule()">
            Final Module
          </button>
+
+         <ion-list-header text-wrap class ="listHeader" *ngIf="studyEnded == 'true' && endModuleExists == 'false'">Congratulations on completing the progression of the Walking in Hózhó application! We are grateful for your generosity in sharing your health-related experiences, and look forward to learning together as we continue to live and walk in health and beauty!</ion-list-header>
+           <button *ngIf="studyEnded == 'true' && endModuleExists == 'false'" ion-button block large round (click)="logout()">
+              Logout
+            </button>
 </div>
 </ion-content>

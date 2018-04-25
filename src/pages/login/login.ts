@@ -82,7 +82,7 @@ export class LoginPage {
           }
           else
           {
-            alert('Invalid Login');
+            alert('Invalid Login. Please ensure your User ID is input correctly, or contact your research administrator for assistance.');
           }
         });
     }
@@ -121,6 +121,7 @@ export class LoginPage {
 
   login(){
     var studyID: any;
+    var studyName: any;
 
     try
     {
@@ -131,12 +132,13 @@ export class LoginPage {
             //locally store user ID and study ID
             this.storage.set('user', this.user);
             studyID = docSnapshot.data().study_id;
+            studyName = docSnapshot.data().study;
             this.storage.set('study_id', studyID);
-            //cordova.plugins.notification.badge.set(0);
+            cordova.plugins.notification.badge.set(0);
             this.appCtrl.getRootNav().setRoot(BaselinePage, {
               start: 'true',
               type: 'base',
-              study: studyID
+              study: studyName
             });
             return studyID;
           }
@@ -300,6 +302,7 @@ export class LoginPage {
               questionIDs: id,
               branching: branches,
               triggered: 'no',
+              triggeredAt: '',
               name: modName,
               modID: ModID,
               interval: interval
@@ -358,7 +361,6 @@ export class LoginPage {
           localforage.setItem("base", base).then(function (value) {
           // Do other things once the value has been saved.
           console.log(value);
-          //self.doSomethingElse();
           }).catch(function(err) {
               // This code runs if there were any errors
               console.log(err);
@@ -398,7 +400,8 @@ export class LoginPage {
               branching: branches,
               name: modName,
               modID: ModID,
-              triggered: 'no'
+              triggered: 'no',
+              completed: 'no'
           };
           localforage.setItem("end", end).then(function (value) {
           // Do other things once the value has been saved.
@@ -458,7 +461,7 @@ export class LoginPage {
             notif = {
               id: this.notificationID++,
               title: 'Please complete Questionnaire',
-              text: 'You have a Time Initiated Module that needs to be completed',
+              text: 'It is time to log in to Walking in Hózhó, to report your in-the-moment experiences!',
               data: { notiID: id, type: "Time Initiated"},
               every: { hour: currentHour, minute: currentMinutes },
               };
@@ -499,7 +502,7 @@ export class LoginPage {
           }
         }
       }
-      //cordova.plugins.notification.local.schedule(notifications);
+      cordova.plugins.notification.local.schedule(notifications);
 
   }
 
@@ -530,7 +533,6 @@ export class LoginPage {
         localforage.setItem(id, question).then(function (value) {
         // Do other things once the value has been saved.
         console.log(value);
-        //self.doSomethingElse();
         }).catch(function(err) {
             // This code runs if there were any errors
             console.log(err);

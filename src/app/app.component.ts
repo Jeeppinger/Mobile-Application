@@ -7,6 +7,7 @@ import { LoginPage } from '../pages/login/login';
 import { TabsPage } from '../pages/tabs/tabs';
 import { App } from 'ionic-angular';
 import { ModulePage } from '../pages/module/module';
+import { AngularFirestore } from 'angularfire2/firestore';
 import * as localforage from "localforage";
 declare var cordova;
 
@@ -20,8 +21,8 @@ export class MyApp {
   sleep_end: any;
 
   constructor(platform: Platform, statusBar: StatusBar,
-              splashScreen: SplashScreen, storage: Storage,
-              appCtrl: App) {
+              splashScreen: SplashScreen, public storage: Storage,
+              appCtrl: App, public afs: AngularFirestore) {
     splashScreen.show();
 
     platform.ready().then(() => {
@@ -75,6 +76,11 @@ export class MyApp {
   }
 
   triggerModule(id) {
+    let self = this;
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
 
     localforage.getItem(id).then(function(value) {
         // This code runs once the value has been loaded
@@ -88,16 +94,94 @@ export class MyApp {
           if (temp.triggered == 'yes'){
             //we will need to send blank data to Firestore
             //this means a user has missed a log
+            self.submitModule(id);
           }
           else{
             temp.triggered = 'yes';
+            temp.triggeredAt = dateTime;
             localforage.setItem(id, temp);
           }
+
         }
     }).catch(function(err) {
         // This code runs if there were any errors
         console.log(err);
     });
 
+  }
+
+  submitModule(mID){
+    //submit answer to database
+
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
+    var originalDateTime = dateTime;
+    let self = this;
+    var modKey: any;
+
+    this.storage.get('user').then((val) => {
+      if (val)
+      {
+        try
+        {
+          localforage.getItem(mID).then(function(value) {
+              // This code runs once the value has been loaded
+              // from the offline store.
+              var temp: any = {};
+              temp = value;
+
+              var firestoreID = temp.name;
+              var triggeredAt = temp.triggeredAt;
+              dateTime = triggeredAt + " => " + "null";
+              if (value == null){
+                alert('failure');
+              }
+              else {
+                let that = self;
+                self.afs.firestore.doc('/Answers/'+ val).get().then(function(querySnapshot) {
+                  if (!querySnapshot.exists)
+                  {
+                    modIDArray = [];
+                    modIDArray.push(firestoreID);
+                    that.afs.firestore.doc('/Answers/'+ val).set({
+                        moduleIDs: modIDArray
+                    });
+                    var answer = {ans: "null"};
+                    that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(answer);
+                  }
+                  else
+                  {
+                    var tempSnap: any = {};
+                    tempSnap = querySnapshot;
+                    var modIDArray: any = tempSnap.data().moduleIDs;
+                    if (modIDArray == null){
+                      modIDArray = [];
+                    }
+                    if (!modIDArray.includes(firestoreID)){
+                      modIDArray.push(firestoreID);
+                      that.afs.firestore.doc('/Answers/'+ val).set({
+                          moduleIDs: modIDArray
+                      });
+                    }
+                    var answer = {ans: "null"};
+                    that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(answer);
+                  }
+                  temp.triggeredAt = originalDateTime;
+                  localforage.setItem(mID, temp);
+                });
+              }
+          }).catch(function(err) {
+              // This code runs if there were any errors
+              console.log(err);
+          });
+        }
+        catch (e) {
+          //this.questionsType = "Unable to Store Answer";
+          alert("Unable to Store Answer");
+        }
+      }
+    });
   }
 }

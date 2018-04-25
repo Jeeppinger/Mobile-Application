@@ -182,8 +182,33 @@ export class BaselinePage {
       }
     }
 
+    public parseMultiChoice(){
+        var counter = 0;
+        var selectedAnswers = this.userInfo.ans;
+        var stringToReturn = "";
+
+        this.options.forEach(function (value) {
+          if (selectedAnswers.includes(""+counter)){
+            stringToReturn = stringToReturn + "1:"+value+"&&";
+          }
+          else{
+            stringToReturn = stringToReturn + "0:"+value+"&&";
+          }
+          counter++;
+        });
+
+        //take off the last &&
+        stringToReturn = stringToReturn.substring(0, stringToReturn.length - 2);
+        return stringToReturn;
+    }
+
     submitModule(){
-      this.answers[this.questionsName] = this.userInfo.ans;
+      if (this.questionsType== 'multi'){
+        this.answers[this.questionsName] = this.parseMultiChoice();
+      }
+      else{
+        this.answers[this.questionsName] = this.userInfo.ans;
+      }
       localforage.getItem("base").then(function(value) {
           // This code runs once the value has been loaded
           // from the offline store.
@@ -279,7 +304,12 @@ export class BaselinePage {
 
     submitQuestion(){
       this.counter++;
-      this.answers[this.questionsName] = this.userInfo.ans;
+      if (this.questionsType== 'multi'){
+        this.answers[this.questionsName] = this.parseMultiChoice();
+      }
+      else{
+        this.answers[this.questionsName] = this.userInfo.ans;
+      }
       this.completedQIDs.push(this.qID);
       var nextQ = this.branching[this.qID];
       if (nextQ[0] == '-1'){

@@ -1,6 +1,22 @@
-.tabPages, .backlog {
+.tabPages, .backlog{
     background-image: url('../assets/imgs/background4.jpg');
     background-size: 100% 100%;
+}
+
+.aboutPage{
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background-image: url('../assets/imgs/background4.jpg');
+  width: 100vw;
+        height: 100vh;
+  background-size: 100% 100%;
+  -webkit-filter: blur(2px);
+  -moz-filter: blur(2px);
+  -o-filter: blur(2px);
+  -ms-filter: blur(2px);
+  filter: blur(2px);
 }
 
 .modulePages {
@@ -8,17 +24,15 @@
   left: 0;
   right: 0;
   z-index: 1;
-
-  display: block;
   background-image: url('../assets/imgs/background4.jpg');
-  width: 1200px;
-  height: 800px;
-background-size: 100% 100%;
-  -webkit-filter: blur(5px);
-  -moz-filter: blur(5px);
-  -o-filter: blur(5px);
-  -ms-filter: blur(5px);
-  filter: blur(5px);
+  width: 100vw;
+        height: 100vh;
+  background-size: 100% 100%;
+  -webkit-filter: blur(2px);
+  -moz-filter: blur(2px);
+  -o-filter: blur(2px);
+  -ms-filter: blur(2px);
+  filter: blur(2px);
 }
 
 .listHeader{
@@ -61,6 +75,18 @@ background-size: 100% 100%;
   font-size: 25px;
   text-align: center;
 }
+
+.about{
+  color: white;
+  font-size: 18px;
+  margin-right: 5px;
+  margin-left: 5px;
+  margin-top: 40px;
+    font-family: Gill Sans, Verdana;
+    background-color: rgba(0, 0, 0,0.6);
+    padding: 2px;
+}
+
 
 .header1{
     word-wrap: break-word !important;

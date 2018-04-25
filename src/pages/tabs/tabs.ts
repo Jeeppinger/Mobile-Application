@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { AboutPage } from '../about/about';
+import { ConnectPage } from '../connect/connect';
 import { BacklogPage } from '../backlog/backlog';
 import { HomePage } from '../home/home';
 import { Platform } from 'ionic-angular';
@@ -13,17 +13,14 @@ import * as localforage from "localforage";
 export class TabsPage {
 
   tab1Root = HomePage;
-  tab2Root = AboutPage;
+  tab2Root = ConnectPage;
   tab3Root = BacklogPage;
 
   badgeCount: any = 0;
   done: any;
 
   constructor(platform: Platform) {
-    let self = this;
-    platform.ready().then(() => {
-      self.setBadge();
-    });
+
   }
 
   setBadge() {
@@ -74,4 +71,7 @@ export class TabsPage {
       counter++;
     }
 }
+  ionViewDidLoad(){
+    this.setBadge();
+  }
 }

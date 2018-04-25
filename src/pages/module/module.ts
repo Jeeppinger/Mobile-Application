@@ -154,8 +154,34 @@ export class ModulePage {
       }
     }
 
+    public parseMultiChoice(){
+        var counter = 0;
+        var selectedAnswers = this.userInfo.ans;
+        var stringToReturn = "";
+
+        this.options.forEach(function (value) {
+          if (selectedAnswers.includes(""+counter)){
+            stringToReturn = stringToReturn + "1:"+value+"&&";
+          }
+          else{
+            stringToReturn = stringToReturn + "0:"+value+"&&";
+          }
+          counter++;
+        });
+
+        //take off the last &&
+        stringToReturn = stringToReturn.substring(0, stringToReturn.length - 2);
+        return stringToReturn;
+    }
+
     submitModule(){
-      this.answers[this.questionsName] = this.userInfo.ans;
+      if (this.questionsType== 'multi'){
+        this.answers[this.questionsName] = this.parseMultiChoice();
+      }
+      else{
+        this.answers[this.questionsName] = this.userInfo.ans;
+      }
+
 
       if (this.moduleType == 'Time Initiated'){
         let self = this;
@@ -212,6 +238,25 @@ export class ModulePage {
             console.log(err);
         });
       }
+      else if (this.moduleType == 'End Module'){
+        modKey = "end";
+        localforage.getItem("end").then(function(value) {
+            // This code runs once the value has been loaded
+            // from the offline store.
+            var temp: any = {};
+            temp = value;
+            if (value == null){
+              alert('failure5');
+            }
+            else {
+              temp.completed = 'yes';
+              localforage.setItem("end", temp);
+            }
+        }).catch(function(err) {
+            // This code runs if there were any errors
+            console.log(err);
+        });
+      }
       else if (this.moduleType == 'Time Initiated'){
         modKey = this.mID;
 
@@ -231,11 +276,6 @@ export class ModulePage {
         modKey = "UImod" + this.mID;
       }
 
-      else if (this.moduleType == 'End Module'){
-        modKey = "end";
-        //will need to logout after submission
-      }
-
       this.storage.get('user').then((val) => {
         if (val)
         {
@@ -246,11 +286,16 @@ export class ModulePage {
                 // from the offline store.
                 var temp: any = {};
                 temp = value;
-                var firestoreID = temp.name;
+
                 if (value == null){
                   alert('failure');
                 }
                 else {
+                  var firestoreID = temp.name;
+                  if (self.moduleType == 'Time Initiated'){
+                    var triggeredAt = temp.triggeredAt;
+                    dateTime = triggeredAt + " => " + dateTime;
+                  }
                   let that = self;
                   self.afs.firestore.doc('/Answers/'+ val).get().then(function(querySnapshot) {
                     if (!querySnapshot.exists)
@@ -297,7 +342,13 @@ export class ModulePage {
 
     submitQuestion(){
       this.counter++;
-      this.answers[this.questionsName] = this.userInfo.ans;
+      if (this.questionsType== 'multi'){
+        this.answers[this.questionsName] = this.parseMultiChoice();
+        //alert(this.answers[this.questionsName]);
+      }
+      else{
+        this.answers[this.questionsName] = this.userInfo.ans;
+      }
       this.completedQIDs.push(this.qID);
       var nextQ = this.branching[this.qID];
       if (nextQ[0] == '-1'){

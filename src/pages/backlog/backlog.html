@@ -11,7 +11,7 @@
 <button ion-button full (click)="initializeModules()">Refresh To-Do List</button>
     <ion-list>
       <ion-list-header class ="listHeader">Modules to Complete:</ion-list-header>
-      <ion-item  *ngFor="let module of timeInitiatedModules; let i = index;">
+      <ion-item no-lines *ngFor="let module of timeInitiatedModules; let i = index;">
         <button ion-button block large round (click)="startModule(i)">
            {{ module.name }}
          </button>

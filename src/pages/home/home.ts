@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { AlertController, Platform } from 'ionic-angular';
 import { LoginPage } from '../login/login';
 import { ModulePage } from '../module/module';
+import { AboutPage } from '../about/about';
 import { Storage } from '@ionic/storage';
 import { App } from 'ionic-angular';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -36,6 +37,7 @@ export class HomePage {
   userInitiatedModules: any;
   done: any;
   studyEnded: any = '';
+  endModuleExists: any = '';
 
   constructor(public storage: Storage, private toast: ToastController,
     public alertCtrl: AlertController,
@@ -57,12 +59,12 @@ export class HomePage {
   logout(){
     this.storage.remove('user');
     this.storage.remove('study_id');
-/*
+
     cordova.plugins.notification.local.cancelAll(function() {
         console.log('Notifications cancelled. ');
     }, this);
     cordova.plugins.notification.badge.clear();
-*/
+
     localforage.clear().then(function() {
     // Run this code once the database has been entirely deleted.
     console.log('Database is now empty.');
@@ -78,6 +80,10 @@ export class HomePage {
       mID: "end",
       type: 'End Module'
     });
+  }
+
+  goToAbout(){
+    this.appCtrl.getRootNav().setRoot(AboutPage);
   }
 
   initializeModules(){
@@ -103,6 +109,25 @@ export class HomePage {
           {
               self.done = 'true';
               self.studyEnded = 'true';
+              let that = self;
+              localforage.getItem("end").then(function(value1) {
+                if (value1 == null){
+                  that.endModuleExists = 'false';
+                }
+                else{
+                  var temp1: any = {};
+                  temp1 = value1;
+                  if (temp1.completed == 'yes'){
+                    that.endModuleExists = 'false';
+                  }
+                  else{
+                    that.endModuleExists = 'true';
+                  }
+                }
+              }).catch(function(err) {
+                  // This code runs if there were any errors
+                  console.log(err);
+              });
           }
         }
     }).catch(function(err) {

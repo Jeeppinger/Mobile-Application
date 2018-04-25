@@ -54,6 +54,12 @@ export class BacklogPage {
           start: 'true'
         });
       }
+      else{
+        this.appCtrl.getRootNav().setRoot(ModulePage, {
+          mID: modID,
+          type: 'Time Initiated'
+        });
+      }
     }
     else{
       this.appCtrl.getRootNav().setRoot(ModulePage, {
