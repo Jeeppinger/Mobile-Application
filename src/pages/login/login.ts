@@ -134,7 +134,7 @@ export class LoginPage {
             studyID = docSnapshot.data().study_id;
             studyName = docSnapshot.data().study;
             this.storage.set('study_id', studyID);
-            cordova.plugins.notification.badge.set(0);
+            //cordova.plugins.notification.badge.set(0);
             this.appCtrl.getRootNav().setRoot(BaselinePage, {
               start: 'true',
               type: 'base',
@@ -166,18 +166,14 @@ export class LoginPage {
 
     //get the study end date
     this.afs.firestore.doc('/Studies/'+ id).get().then(function(querySnapshot) {
-      var date = querySnapshot.data().end_date;
-      //set end date to the morning of study end date
+      var date = querySnapshot.data().end;
+      //set end date
       var end_date = new Date(date);
 
       var wake_up = "" + self.sleep_end;
       wake_up = wake_up.substring(0,2);
 
       var wake = +wake_up;
-
-      end_date.setHours(wake);
-      end_date.setMinutes(0);
-      end_date.setSeconds(0);
 
       self.studyEndDate = end_date;
 
@@ -444,6 +440,7 @@ export class LoginPage {
 
       if (id == "end"){
         var end_date: any= new Date(this.studyEndDate);
+        alert(end_date);
         notif = {
           id: this.notificationID++,
           title: 'Study Ended',
@@ -502,7 +499,7 @@ export class LoginPage {
           }
         }
       }
-      cordova.plugins.notification.local.schedule(notifications);
+      //cordova.plugins.notification.local.schedule(notifications);
 
   }
 
