@@ -5,7 +5,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import 'rxjs/add/operator/map';
 import { TabsPage } from '../tabs/tabs';
 import { AlertController } from 'ionic-angular';
-
+import { SplashScreen } from '@ionic-native/splash-screen';
 import * as localforage from "localforage";
 declare var cordova;
 /**
@@ -40,7 +40,7 @@ export class ModulePage {
 
   constructor(public afs: AngularFirestore, public navCtrl: NavController,
     public navParams: NavParams, public storage: Storage,
-    public alertCtrl: AlertController) {
+    public alertCtrl: AlertController, public splashScreen: SplashScreen) {
       //initial sign in
       this.base = navParams.get('start');
       this.moduleType = navParams.get('type');
@@ -49,10 +49,21 @@ export class ModulePage {
         this.mod = navParams.get('mID');
         this.mID = "" + this.mod;
         if (this.moduleType == 'Time Initiated'){
-          this.idToCancel = navParams.get('idToCancel');
+          //this.idToCancel = navParams.get('idToCancel');
         }
       }
       this.startModule();
+    }
+
+    public sleepThenPush(){
+      this.splashScreen.show();
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > 3000){
+          this.splashScreen.hide();
+          this.navCtrl.push(TabsPage);
+        }
+      }
     }
 
     public exitModule(){
@@ -175,155 +186,33 @@ export class ModulePage {
     }
 
     submitModule(){
-      if (this.questionsType== 'multi'){
-        this.answers[this.questionsName] = this.parseMultiChoice();
-      }
-      else{
-        this.answers[this.questionsName] = this.userInfo.ans;
-      }
+          if (this.questionsType== 'multi'){
+            this.answers[this.questionsName] = this.parseMultiChoice();
+          }
+          else{
+            this.answers[this.questionsName] = this.userInfo.ans;
+          }
 
 
-      if (this.moduleType == 'Time Initiated'){
-        let self = this;
-        localforage.getItem(this.mID).then(function(value) {
-            // This code runs once the value has been loaded
-            // from the offline store.
-            var temp: any = {};
-            temp = value;
-            if (value == null){
-              alert('failure');
-            }
-            else {
-              temp.triggered = 'no';
-              //store it back
-              localforage.setItem(self.mID, temp).then(function (value) {
-              // Do other things once the value has been saved.
-              console.log(value);
-              }).catch(function(err) {
-                  // This code runs if there were any errors
-                  console.log(err);
-              });
-            }
-        }).catch(function(err) {
-            // This code runs if there were any errors
-            console.log(err);
-        });
-      }
-
-      //submit answer to database
-
-      var today = new Date();
-      var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-      var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      var dateTime = date+' '+time;
-      let self = this;
-      var modKey: any;
-
-      if (this.moduleType == 'base'){
-        modKey = "base";
-        localforage.getItem("base").then(function(value) {
-            // This code runs once the value has been loaded
-            // from the offline store.
-            var temp: any = {};
-            temp = value;
-            if (value == null){
-              alert('failure4');
-            }
-            else {
-              temp.completed = 'yes';
-              localforage.setItem("base", temp);
-            }
-        }).catch(function(err) {
-            // This code runs if there were any errors
-            console.log(err);
-        });
-      }
-      else if (this.moduleType == 'End Module'){
-        modKey = "end";
-        localforage.getItem("end").then(function(value) {
-            // This code runs once the value has been loaded
-            // from the offline store.
-            var temp: any = {};
-            temp = value;
-            if (value == null){
-              alert('failure5');
-            }
-            else {
-              temp.completed = 'yes';
-              localforage.setItem("end", temp);
-            }
-        }).catch(function(err) {
-            // This code runs if there were any errors
-            console.log(err);
-        });
-      }
-      else if (this.moduleType == 'Time Initiated'){
-        modKey = this.mID;
-
-        cordova.plugins.notification.badge.decrease(1, function (badge) {
-          // decrease badge
-        });
-
-
-        //clear notification
-        cordova.plugins.notification.local.clear(this.idToCancel, function() {
-
-        });
-
-      }
-
-      else if (this.moduleType == 'User Initiated'){
-        modKey = "UImod" + this.mID;
-      }
-
-      this.storage.get('user').then((val) => {
-        if (val)
-        {
-          try
-          {
-            localforage.getItem(modKey).then(function(value) {
+          if (this.moduleType == 'Time Initiated'){
+            let self = this;
+            localforage.getItem(this.mID).then(function(value) {
                 // This code runs once the value has been loaded
                 // from the offline store.
                 var temp: any = {};
                 temp = value;
-
                 if (value == null){
                   alert('failure');
                 }
                 else {
-                  var firestoreID = temp.name;
-                  if (self.moduleType == 'Time Initiated'){
-                    var triggeredAt = temp.triggeredAt;
-                    dateTime = triggeredAt + " => " + dateTime;
-                  }
-                  let that = self;
-                  self.afs.firestore.doc('/Answers/'+ val).get().then(function(querySnapshot) {
-                    if (!querySnapshot.exists)
-                    {
-                      modIDArray = [];
-                      modIDArray.push(firestoreID);
-                      that.afs.firestore.doc('/Answers/'+ val).set({
-                          moduleIDs: modIDArray
-                      });
-                      that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
-                    }
-                    else
-                    {
-                      var tempSnap: any = {};
-                      tempSnap = querySnapshot;
-                      var modIDArray: any = tempSnap.data().moduleIDs;
-                      if (modIDArray == null){
-                        modIDArray = [];
-                      }
-                      if (!modIDArray.includes(firestoreID)){
-                        modIDArray.push(firestoreID);
-                        that.afs.firestore.doc('/Answers/'+ val).set({
-                            moduleIDs: modIDArray
-                        });
-                      }
-                      that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
-                    }
-
+                  temp.triggered = 'no';
+                  //store it back
+                  localforage.setItem(self.mID, temp).then(function (value) {
+                  // Do other things once the value has been saved.
+                  console.log(value);
+                  }).catch(function(err) {
+                      // This code runs if there were any errors
+                      console.log(err);
                   });
                 }
             }).catch(function(err) {
@@ -331,14 +220,142 @@ export class ModulePage {
                 console.log(err);
             });
           }
-          catch (e) {
-            //this.questionsType = "Unable to Store Answer";
-            alert("Unable to Store Answer");
+
+          //submit answer to database
+          var today = new Date();
+          var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+          var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+          var dateTime = date+' '+time;
+          let self = this;
+          var modKey: any;
+
+          if (this.moduleType == 'base'){
+            modKey = "base";
+            localforage.getItem("base").then(function(value) {
+                // This code runs once the value has been loaded
+                // from the offline store.
+                var temp: any = {};
+                temp = value;
+                if (value == null){
+                  alert('failure4');
+                }
+                else {
+                  temp.completed = 'yes';
+                  localforage.setItem("base", temp);
+                }
+            }).catch(function(err) {
+                // This code runs if there were any errors
+                console.log(err);
+            });
           }
+          else if (this.moduleType == 'End Module'){
+            modKey = "end";
+            localforage.getItem("end").then(function(value) {
+                // This code runs once the value has been loaded
+                // from the offline store.
+                var temp: any = {};
+                temp = value;
+                if (value == null){
+                  alert('failure5');
+                }
+                else {
+                  temp.completed = 'yes';
+                  localforage.setItem("end", temp);
+                }
+            }).catch(function(err) {
+                // This code runs if there were any errors
+                console.log(err);
+            });
+          }
+          else if (this.moduleType == 'Time Initiated'){
+            modKey = this.mID;
+
+            cordova.plugins.notification.badge.decrease(1, function (badge) {
+              // decrease badge
+            });
+
+
+            //clear notification
+            cordova.plugins.notification.local.clear(this.idToCancel, function() {
+
+            });
+
+          }
+
+          else if (this.moduleType == 'User Initiated'){
+            modKey = "UImod" + this.mID;
+          }
+
+          this.storage.get('user').then((val) => {
+            if (val)
+            {
+              try
+              {
+                localforage.getItem(modKey).then(function(value) {
+                    // This code runs once the value has been loaded
+                    // from the offline store.
+                    var temp: any = {};
+                    temp = value;
+
+                    if (value == null){
+                      alert('failure');
+                    }
+                    else {
+                      var firestoreID = temp.name;
+                      if (self.moduleType == 'Time Initiated'){
+                        var triggeredAt = temp.triggeredAt;
+                        dateTime = triggeredAt + " => " + dateTime;
+                      }
+                      let that = self;
+                      self.afs.firestore.doc('/Answers/'+ val).get().then(function(querySnapshot) {
+                        if (!querySnapshot.exists)
+                        {
+                          modIDArray = [];
+                          modIDArray.push(firestoreID);
+                          that.afs.firestore.doc('/Answers/'+ val).set({
+                              moduleIDs: modIDArray
+                          });
+                          that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
+                        }
+                        else
+                        {
+                          var tempSnap: any = {};
+                          tempSnap = querySnapshot;
+                          var modIDArray: any = tempSnap.data().moduleIDs;
+                          if (modIDArray == null){
+                            modIDArray = [];
+                          }
+                          if (!modIDArray.includes(firestoreID)){
+                            modIDArray.push(firestoreID);
+                            that.afs.firestore.doc('/Answers/'+ val).set({
+                                moduleIDs: modIDArray
+                            });
+                          }
+                          that.afs.firestore.doc('/Answers/'+val).collection(firestoreID).doc(dateTime).set(self.answers);
+                        }
+
+                      });
+                    }
+                }).catch(function(err) {
+                    // This code runs if there were any errors
+                    console.log(err);
+                });
+              }
+              catch (e) {
+                //this.questionsType = "Unable to Store Answer";
+                alert("Unable to Store Answer");
+              }
+              self.navCtrl.push(TabsPage);
+            }
+          });/*
+          if (this.moduleType != 'Time Initiated' && this.moduleType != 'base'){
+            this.navCtrl.push(TabsPage);
+          }
+          else{
+            this.sleepThenPush();
+          }
+*/
         }
-      });
-      this.navCtrl.push(TabsPage);
-    }
 
     submitQuestion(){
       this.counter++;

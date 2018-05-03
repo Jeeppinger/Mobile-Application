@@ -57,13 +57,14 @@ export class HomePage {
   }
 
   logout(){
+    
     this.storage.remove('user');
     this.storage.remove('study_id');
 
-    //cordova.plugins.notification.local.cancelAll(function() {
+    cordova.plugins.notification.local.cancelAll(function() {
         //console.log('Notifications cancelled. ');
-    //}, this);
-    //cordova.plugins.notification.badge.clear();
+    }, this);
+    cordova.plugins.notification.badge.clear();
 
     localforage.clear().then(function() {
     // Run this code once the database has been entirely deleted.

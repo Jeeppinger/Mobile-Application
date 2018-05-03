@@ -26,6 +26,7 @@ export class MyApp {
     splashScreen.show();
 
     platform.ready().then(() => {
+
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
@@ -56,19 +57,24 @@ export class MyApp {
         //we will need to set the page to the module page and start
         //the module with the given module id
         //we will need to get the module ID
+        if (notification.data.notiID != "1day"){
         appCtrl.getRootNav().setRoot(ModulePage, {
           mID: '' + notification.data.notiID,
           type: notification.data.type
         });
-        }, this);
+      }
+
+      }, this);
 
       cordova.plugins.notification.local.on("trigger", function(notification) {
         //will need to keep a queue of all the backlogs
         //backlogs will be cleared once the modules have been completed
+        if (notification.data.notiID != "1day"){
         self.triggerModule(notification.data.notiID);
         cordova.plugins.notification.badge.increase(1, function (badge) {
           // increase badge
-      });
+        });
+      }
       });
 
 
@@ -88,7 +94,7 @@ export class MyApp {
         var temp: any = {};
         temp = value;
         if (value == null){
-          alert('failure2');
+          //alert('failure2');
         }
         else {
           if (temp.triggered == 'yes'){

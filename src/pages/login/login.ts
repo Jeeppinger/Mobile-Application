@@ -64,11 +64,23 @@ export class LoginPage {
         text: 'Yes',
         handler: () => {
           this.login();
+          //this.sleep();
         }
       }
     ]
   });
   confirm.present();
+  }
+
+public sleep() {
+    this.splashScreen.show();
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > 2000){
+        this.splashScreen.hide();
+        break;
+      }
+    }
   }
 
   authenticateUser(){
@@ -134,12 +146,13 @@ export class LoginPage {
             studyID = docSnapshot.data().study_id;
             studyName = docSnapshot.data().study;
             this.storage.set('study_id', studyID);
-            //cordova.plugins.notification.badge.set(0);
+            cordova.plugins.notification.badge.set(0);
             this.appCtrl.getRootNav().setRoot(BaselinePage, {
               start: 'true',
               type: 'base',
               study: studyName
             });
+            this.sleep();
             return studyID;
           }
           else
@@ -178,6 +191,9 @@ export class LoginPage {
       self.studyEndDate = end_date;
 
       localforage.setItem("end_date", end_date);
+
+      //schedule hard coded notifications
+      self.scheduleModule("1day",1);
     });
 
     //get all documents in a collection
@@ -440,13 +456,33 @@ export class LoginPage {
 
       if (id == "end"){
         var end_date: any= new Date(this.studyEndDate);
-        alert(end_date);
         notif = {
           id: this.notificationID++,
           title: 'Study Ended',
+          foreground: true,
           text: 'The study has ended. Please complete the final module',
           data: { notiID: id, type: "end"},
           at: end_date
+        };
+        notifications.push(notif);
+      }
+
+      else if (id == "1day"){
+        var this_morning = new Date();
+
+        var next_morning = new Date();
+        next_morning.setDate(this_morning.getDate() + 1);
+        next_morning.setHours(start);
+        next_morning.setMinutes(0);
+        next_morning.setSeconds(0);
+
+        notif = {
+          id: this.notificationID++,
+          title: 'Good Morning!',
+          foreground: true,
+          text: 'We wish you a happy first morning sharing how you walk in health and beauty! Throughout each day, please remember to log in each meal, and answer in-the-moment questions.',
+          data: { notiID: id, type: "1day"},
+          at: next_morning
         };
         notifications.push(notif);
       }
@@ -457,9 +493,10 @@ export class LoginPage {
           {
             notif = {
               id: this.notificationID++,
-              title: 'Please complete Questionnaire',
-              text: 'It is time to log in to Walking in Hózhó, to report your in-the-moment experiences!',
+              title: 'Please Complete Module',
+              text: 'It is time to share your in-the-moment experiences with Walking in Hózhó',
               data: { notiID: id, type: "Time Initiated"},
+              foreground: true,
               every: { hour: currentHour, minute: currentMinutes },
               };
               count++;
@@ -487,9 +524,10 @@ export class LoginPage {
           {
             notif = {
               id: this.notificationID++,
-              title: 'Please complete Questionnaire',
-              text: 'You have a Time Initiated Module that needs to be completed',
+              title: 'Please Complete Module',
+              text: 'It is time to share your in-the-moment experiences with Walking in Hózhó',
               data: { notiID: id, type: "Time Initiated"},
+              foreground: true,
               every: { hour: currentHour, minute: currentMinutes },
             };
             notifications.push(notif);
@@ -499,7 +537,7 @@ export class LoginPage {
           }
         }
       }
-      //cordova.plugins.notification.local.schedule(notifications);
+      cordova.plugins.notification.local.schedule(notifications);
 
   }
 
