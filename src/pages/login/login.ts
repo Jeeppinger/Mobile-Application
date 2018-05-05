@@ -182,6 +182,7 @@ public sleep() {
       var date = querySnapshot.data().end;
       //set end date
       var end_date = new Date(date);
+      alert("first: "+ end_date);
 
       var wake_up = "" + self.sleep_end;
       wake_up = wake_up.substring(0,2);
@@ -456,12 +457,13 @@ public sleep() {
 
       if (id == "end"){
         var end_date: any= new Date(this.studyEndDate);
+        alert("second: "+ end_date);
         notif = {
           id: this.notificationID++,
           title: 'Study Ended',
           foreground: true,
           text: 'The study has ended. Please complete the final module',
-          data: { notiID: id, type: "end"},
+          data: { notiID: id, type: "End Module"},
           at: end_date
         };
         notifications.push(notif);
