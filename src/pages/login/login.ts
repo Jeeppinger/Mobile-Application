@@ -73,6 +73,7 @@ export class LoginPage {
   }
 
 public sleep() {
+
     this.splashScreen.show();
     var start = new Date().getTime();
     for (var i = 0; i < 1e7; i++) {
@@ -81,7 +82,12 @@ public sleep() {
         break;
       }
     }
+
   }
+
+public sleepTest (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 
   authenticateUser(){
     try
@@ -131,7 +137,7 @@ public sleep() {
 
   }
 
-  login(){
+login(){
     var studyID: any;
     var studyName: any;
 
@@ -152,7 +158,11 @@ public sleep() {
               type: 'base',
               study: studyName
             });
-            this.sleep();
+            self.splashScreen.show();
+            self.sleepTest(3000).then(() => {
+              self.splashScreen.hide();
+          });
+            //self.sleep();
             return studyID;
           }
           else
@@ -182,7 +192,6 @@ public sleep() {
       var date = querySnapshot.data().end;
       //set end date
       var end_date = new Date(date);
-      alert("first: "+ end_date);
 
       var wake_up = "" + self.sleep_end;
       wake_up = wake_up.substring(0,2);
@@ -457,7 +466,6 @@ public sleep() {
 
       if (id == "end"){
         var end_date: any= new Date(this.studyEndDate);
-        alert("second: "+ end_date);
         notif = {
           id: this.notificationID++,
           title: 'Study Ended',
