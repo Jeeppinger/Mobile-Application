@@ -520,15 +520,16 @@ login(){
 
         else{
           var currentTime = new Date();
-          currentTime.setHours(start);
+          currentTime.setHours(end);
           currentTime.setMinutes(0);
           currentTime.setSeconds(0);
 
           var secondTime = new Date();
-          secondTime.setHours(end);
+          secondTime.setDate(secondTime.getDate() + 1);
+          secondTime.setHours(start);
           secondTime.setMinutes(0);
           secondTime.setSeconds(0);
-          secondTime = new Date(secondTime.getTime() + (1000 * 60 * 60 * 24));
+          //secondTime = new Date(secondTime.getTime() + (1000 * 60 * 60 * 24));
 
           while(currentTime.getTime() < secondTime.getTime())
           {

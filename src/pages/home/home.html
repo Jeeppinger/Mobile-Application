@@ -28,8 +28,11 @@
 </ion-fab>
 
 <div class = "mainHome">
+  <!--
 <button ion-button full (click)="logout()">Logout</button>
-
+-->
+<br>
+<br>
     <ion-list *ngIf="studyEnded != 'true'">
       <ion-list-header class ="listHeader">Select the event-type you wish to log:</ion-list-header>
       <ion-item  no-lines class ="item" *ngFor="let module of userInitiatedModules; let i = index;">

@@ -57,7 +57,7 @@ export class HomePage {
   }
 
   logout(){
-    
+
     this.storage.remove('user');
     this.storage.remove('study_id');
 
@@ -105,7 +105,7 @@ export class HomePage {
           var date:any = value;
           var today = new Date();
           var end:any = new Date(date);
-          end.setDate(end.getDate()+1);
+
           if (today.getTime() > end.getTime())
           {
               self.done = 'true';
@@ -162,13 +162,6 @@ export class HomePage {
       this.storage.get('user').then((val) => {
         if (val)
         {
-
-          let toast = this.toast.create({
-            message: `Welcome! \nYá'át'ééh!`,
-            duration: 3500,
-            position: 'top'
-          });
-          toast.present();
 
           //get a specific document within a collection
           this.participantsCollectionRef = this.afs.firestore.doc('/Participants/'+val).get()

@@ -73,7 +73,7 @@ export class BaselinePage {
           {
             text: 'Exit Module',
             handler: () => {
-              this.navCtrl.push(TabsPage);
+              this.navCtrl.push(TabsPage, {module : "true"});
             }
           }
         ]
@@ -203,12 +203,6 @@ export class BaselinePage {
     }
 
     submitModule(){
-      if (this.questionsType== 'multi'){
-        this.answers[this.questionsName] = this.parseMultiChoice();
-      }
-      else{
-        this.answers[this.questionsName] = this.userInfo.ans;
-      }
       localforage.getItem("base").then(function(value) {
           // This code runs once the value has been loaded
           // from the offline store.
@@ -297,9 +291,10 @@ export class BaselinePage {
             //this.questionsType = "Unable to Store Answer";
             alert("Unable to Store Answer");
           }
+          self.navCtrl.push(TabsPage, {module : "true"});
         }
       });
-      this.navCtrl.push(TabsPage);
+
     }
 
     submitQuestion(){

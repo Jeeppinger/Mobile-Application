@@ -60,6 +60,16 @@
     <ion-datetime style="font-size:16px; font-weight:bold;" color = "white" displayFormat="hh:mm a" [(ngModel)]="userInfo.ans"></ion-datetime>
   </ion-item>
 
+  <ion-item *ngIf="questionsType == 'date'">
+    <ion-label style="font-size:20px" color = "white" floating>Date:</ion-label>
+    <ion-input style="font-size:16px; font-weight:bold;" color = "white" type="date" [(ngModel)]="userInfo.ans"></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="questionsType == 'number'">
+    <ion-label style="font-size:20px" color = "white" floating>Answer:</ion-label>
+    <ion-input style="font-size:16px; font-weight:bold;" color = "white" type="number" [(ngModel)]="userInfo.ans"></ion-input>
+  </ion-item>
+
   <br>
   <br>
   <button ion-button (click)="prevQuestion()" *ngIf="counter > 0"icon-start>

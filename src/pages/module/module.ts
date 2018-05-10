@@ -79,7 +79,7 @@ export class ModulePage {
           {
             text: 'Exit Module',
             handler: () => {
-              this.navCtrl.push(TabsPage);
+              this.navCtrl.push(TabsPage, {module : "true"});
             }
           }
         ]
@@ -186,13 +186,6 @@ export class ModulePage {
     }
 
     submitModule(){
-          if (this.questionsType== 'multi'){
-            this.answers[this.questionsName] = this.parseMultiChoice();
-          }
-          else{
-            this.answers[this.questionsName] = this.userInfo.ans;
-          }
-
 
           if (this.moduleType == 'Time Initiated'){
             let self = this;
@@ -345,7 +338,7 @@ export class ModulePage {
                 //this.questionsType = "Unable to Store Answer";
                 alert("Unable to Store Answer");
               }
-              self.navCtrl.push(TabsPage);
+              self.navCtrl.push(TabsPage, {module : "true"});
             }
           });/*
           if (this.moduleType != 'Time Initiated' && this.moduleType != 'base'){
@@ -359,6 +352,7 @@ export class ModulePage {
 
     submitQuestion(){
       this.counter++;
+
       if (this.questionsType== 'multi'){
         this.answers[this.questionsName] = this.parseMultiChoice();
         //alert(this.answers[this.questionsName]);

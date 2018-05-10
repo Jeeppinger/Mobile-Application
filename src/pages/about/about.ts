@@ -24,7 +24,7 @@ export class AboutPage {
   }
 
   public exitPage(){
-    this.navCtrl.push(TabsPage);
+    this.navCtrl.push(TabsPage, {module : "true"});
   }
 
 }

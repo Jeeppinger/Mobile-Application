@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-
+import { NavController, ToastController, NavParams } from 'ionic-angular';
 import { ConnectPage } from '../connect/connect';
 import { BacklogPage } from '../backlog/backlog';
 import { HomePage } from '../home/home';
 import { Platform } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
 import * as localforage from "localforage";
 
@@ -19,7 +20,9 @@ export class TabsPage {
   badgeCount: any = 0;
   done: any;
 
-  constructor(platform: Platform) {
+  constructor(platform: Platform, private toast: ToastController,
+              public navCtrl: NavController,public navParams: NavParams,
+              public storage: Storage) {
 
   }
 
@@ -73,5 +76,31 @@ export class TabsPage {
 }
   ionViewDidLoad(){
     this.setBadge();
+    try
+    {
+      var comingBackFromModule = this.navParams.get("module");
+      this.storage.get('user').then((val) => {
+        if (val)
+        {
+          if (comingBackFromModule != "true")
+          {
+            let toast = this.toast.create({
+              message: `Welcome! \nYá'át'ééh!`,
+              duration: 3500,
+              position: 'top'
+            });
+            toast.present();
+          }
+        }
+        else
+        {
+          //error
+        }
+      });
+
+    }
+    catch(e){
+      console.error(e);
+    }
   }
 }
