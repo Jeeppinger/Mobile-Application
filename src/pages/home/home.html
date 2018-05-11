@@ -28,11 +28,9 @@
 </ion-fab>
 
 <div class = "mainHome">
-  <!--
+
 <button ion-button full (click)="logout()">Logout</button>
--->
-<br>
-<br>
+
     <ion-list *ngIf="studyEnded != 'true'">
       <ion-list-header class ="listHeader">Select the event-type you wish to log:</ion-list-header>
       <ion-item  no-lines class ="item" *ngFor="let module of userInitiatedModules; let i = index;">
@@ -50,7 +48,7 @@
            Final Module
          </button>
 
-         <ion-list-header text-wrap class ="listHeader" *ngIf="studyEnded == 'true' && endModuleExists == 'false'">Congratulations on completing the progression of the Walking in Hózhó application! We are grateful for your generosity in sharing your health-related experiences, and look forward to learning together as we continue to live and walk in health and beauty!</ion-list-header>
+         <ion-list-header text-wrap class ="listHeader" *ngIf="studyEnded == 'true' && endModuleExists == 'false'">Congratulations on completing the Walking in Hózhó program! We are grateful for your generosity in sharing your health-related experiences, and look forward to learning together as we continue to live and walk in health and beauty! Please click on the LOGOUT button below, when you are ready to complete the study.</ion-list-header>
            <button *ngIf="studyEnded == 'true' && endModuleExists == 'false'" ion-button block large round (click)="logout()">
               Logout
             </button>

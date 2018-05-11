@@ -152,7 +152,7 @@ login(){
             studyID = docSnapshot.data().study_id;
             studyName = docSnapshot.data().study;
             this.storage.set('study_id', studyID);
-            cordova.plugins.notification.badge.set(0);
+            //cordova.plugins.notification.badge.set(0);
             this.appCtrl.getRootNav().setRoot(BaselinePage, {
               start: 'true',
               type: 'base',
@@ -548,7 +548,7 @@ login(){
           }
         }
       }
-      cordova.plugins.notification.local.schedule(notifications);
+      //cordova.plugins.notification.local.schedule(notifications);
 
   }
 
